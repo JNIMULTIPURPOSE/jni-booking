@@ -82,14 +82,18 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    /* CREATE TOKEN */
-console.log("JWT_SECRET:", process.env.JWT_SECRET);
+    /* DEBUG ENV */
+console.log(
+  "JWT_SECRET =",
+  process.env.JWT_SECRET
+);
 
+/* CREATE TOKEN */
 const token = jwt.sign(
   {
     id: user._id,
   },
-  process.env.JWT_SECRET,
+  process.env.JWT_SECRET || "fallback_secret",
   {
     expiresIn: "7d",
   }

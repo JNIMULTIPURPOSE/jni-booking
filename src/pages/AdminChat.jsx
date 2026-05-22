@@ -94,7 +94,7 @@ export default function AdminChat() {
 
   try {
     await axios.post(
-      "http://localhost:5000/api/chat",
+      "https://jni-backend.onrender.com/api/chat",
       {
         sender: "admin",
 

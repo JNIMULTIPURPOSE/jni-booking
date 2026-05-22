@@ -83,15 +83,17 @@ export const loginUser = async (req, res) => {
     }
 
     /* CREATE TOKEN */
-    const token = jwt.sign(
-      {
-        id: user._id,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
+
+const token = jwt.sign(
+  {
+    id: user._id,
+  },
+  process.env.JWT_SECRET,
+  {
+    expiresIn: "7d",
+  }
+);
 
     res.status(200).json({
       message: "Login successful",

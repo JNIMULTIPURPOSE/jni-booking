@@ -43,7 +43,7 @@ export default function AdminDashboard() {
   const fetchDashboardStats = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/admin/stats"
+        "https://jni-backend.onrender.com/api/admin/stats"
       );
 
       setStats(res.data);

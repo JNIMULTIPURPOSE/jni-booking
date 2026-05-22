@@ -15,7 +15,7 @@ export default function Chat() {
 const loadChats = async () => {
   try {
     const res = await axios.get(
-      "http://localhost:5000/api/chat"
+      "https://jni-backend.onrender.com/api/chat"
     );
 
     setMessages(res.data);
@@ -68,7 +68,7 @@ const loadChats = async () => {
 
   try {
     await axios.post(
-      "http://localhost:5000/api/chat",
+      "https://jni-backend.onrender.com/api/chat",
       {
         sender: "user",
 

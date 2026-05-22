@@ -44,7 +44,7 @@ export default function RoomPageLayout({
     const loadListings = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/listings"
+          "https://jni-backend.onrender.com/api/listings"
         );
 
         const filtered = res.data.filter(
@@ -138,7 +138,7 @@ export default function RoomPageLayout({
       };
 
       await axios.post(
-        "http://localhost:5000/api/bookings",
+        "https://jni-backend.onrender.com/api/bookings",
         newBooking
       );
 

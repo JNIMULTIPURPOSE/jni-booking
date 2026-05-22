@@ -18,7 +18,7 @@ export default function Listings() {
   const fetchListings = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/listings"
+        "https://jni-backend.onrender.com/api/listings"
       );
 
       setListings(res.data);
@@ -55,7 +55,7 @@ if (form.image) {
   );
 
   const uploadRes = await axios.post(
-    "http://localhost:5000/api/upload",
+    "https://jni-backend.onrender.com/api/upload",
     imageData
   );
 
@@ -74,7 +74,7 @@ if (form.image) {
 
     try {
   await axios.post(
-    "http://localhost:5000/api/listings",
+    "https://jni-backend.onrender.com/api/listings",
     form,
     {
       headers: {
@@ -116,7 +116,7 @@ if (form.image) {
 
     try {
       await axios.delete(
-        `http://localhost:5000/api/listings/${id}`
+        `https://jni-backend.onrender.com/api/listings/${id}`
       );
 
       fetchListings();

@@ -8,7 +8,7 @@ export default function Inbox() {
   const fetchBookings = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/bookings"
+        "https://jni-backend.onrender.com/api/bookings"
       );
 
       setBookings(res.data);
@@ -29,7 +29,7 @@ export default function Inbox() {
   ) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/bookings/${id}`,
+        `https://jni-backend.onrender.com/api/bookings/${id}`,
         { status }
       );
 
@@ -50,7 +50,7 @@ export default function Inbox() {
 
     try {
       await axios.delete(
-        `http://localhost:5000/api/bookings/${id}`
+        `https://jni-backend.onrender.com/api/bookings/${id}`
       );
 
       fetchBookings();

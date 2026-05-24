@@ -21,7 +21,8 @@ export default function Signup() {
 
   const handleSignup = async (e) => {
   e.preventDefault();
-
+  setLoading(true);
+  setLoading(false);
   if (
     !form.fullname ||
     !form.email ||

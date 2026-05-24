@@ -39,7 +39,7 @@ export default function App() {
       {/* DEFAULT */}
       <Route
         path="/"
-        element={<Navigate to="/signup" />}
+        element={<Home />}
       />
 
       {/* AUTH */}

@@ -36,14 +36,14 @@ export default function Login() {
 
       /* SAVE USER */
       localStorage.setItem(
-        "jni_user",
-        JSON.stringify(res.data.user)
-      );
+  "user",
+  JSON.stringify(res.data.user)
+);
 
-      localStorage.setItem(
-        "jni_token",
-        res.data.token
-      );
+localStorage.setItem(
+  "token",
+  res.data.token
+);
 
       setMessage("Login successful ✅");
 

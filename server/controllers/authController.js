@@ -5,12 +5,17 @@ import jwt from "jsonwebtoken";
 /* ================= REGISTER ================= */
 export const registerUser = async (req, res) => {
   try {
-    const {
+    let {
       fullname,
       email,
       phone,
       password,
     } = req.body;
+
+    /* CLEAN DATA */
+    fullname = fullname.trim();
+    email = email.trim().toLowerCase();
+    phone = phone.trim();
 
     /* CHECK EXISTING USER */
     const existingUser = await User.findOne({
@@ -57,7 +62,10 @@ export const registerUser = async (req, res) => {
 /* ================= LOGIN ================= */
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    /* CLEAN EMAIL */
+    email = email.trim().toLowerCase();
 
     /* FIND USER */
     const user = await User.findOne({
@@ -82,22 +90,16 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    /* DEBUG ENV */
-console.log(
-  "JWT_SECRET =",
-  process.env.JWT_SECRET
-);
-
-/* CREATE TOKEN */
-const token = jwt.sign(
-  {
-    id: user._id,
-  },
-  process.env.JWT_SECRET || "fallback_secret",
-  {
-    expiresIn: "7d",
-  }
-);
+    /* CREATE TOKEN */
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res.status(200).json({
       message: "Login successful",

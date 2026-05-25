@@ -3,146 +3,121 @@ import axios from "axios";
 
 export default function AdminChat() {
   const [allChats, setAllChats] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] =
+    useState("");
+
   const [reply, setReply] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState("");
 
   const bottomRef = useRef(null);
 
-  // LOAD CHATS
-  const loadChats = () => {
+  /* ================= LOAD CHATS ================= */
+  const loadChats = async () => {
     try {
-      const saved =
-        JSON.parse(localStorage.getItem("jni_chat")) || [];
+      const res = await axios.get(
+        "https://jni-backend.onrender.com/api/chat"
+      );
 
-      setAllChats(saved);
-    } catch {
-      setAllChats([]);
+      setAllChats(res.data);
+
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(() => {
     loadChats();
 
-    const handleStorage = () => loadChats();
+    const interval = setInterval(() => {
+      loadChats();
+    }, 3000);
 
-    window.addEventListener("storage", handleStorage);
-
-    return () =>
-      window.removeEventListener(
-        "storage",
-        handleStorage
-      );
+    return () => clearInterval(interval);
   }, []);
 
-  // AUTO SCROLL
+  /* ================= AUTO SCROLL ================= */
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
     });
   }, [allChats, selectedUser]);
 
-  // USERS
+  /* ================= USERS ================= */
   const users = useMemo(() => {
     return [
       ...new Set(
         allChats
-          .map((c) => c.user)
+          .map((c) => c.userEmail)
           .filter(Boolean)
       ),
     ];
   }, [allChats]);
 
-  // MESSAGES
+  /* ================= USER MESSAGES ================= */
   const messages = useMemo(() => {
     if (!selectedUser) return [];
 
     return allChats.filter(
-      (c) => c.user === selectedUser
+      (c) => c.userEmail === selectedUser
     );
   }, [allChats, selectedUser]);
 
-  // SAVE
-  const save = (updated) => {
-    setAllChats(updated);
+  /* ================= OPEN CHAT ================= */
+  const openChat = async (email) => {
+    setSelectedUser(email);
 
-    localStorage.setItem(
-      "jni_chat",
-      JSON.stringify(updated)
-    );
+    try {
+      await axios.put(
+        "https://jni-backend.onrender.com/api/chat/read"
+      );
 
-    window.dispatchEvent(new Event("storage"));
+      loadChats();
+
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // SELECT USER + MARK READ
-  const openChat = (user) => {
-    setSelectedUser(user);
+  /* ================= SEND REPLY ================= */
+  const sendReply = async () => {
+    if (!reply.trim()) return;
 
-    const updated = allChats.map((m) =>
-      m.user === user
-        ? { ...m, read: true }
-        : m
-    );
+    try {
+      await axios.post(
+        "https://jni-backend.onrender.com/api/chat",
+        {
+          sender: "admin",
+          message: reply,
+          userEmail: selectedUser,
+        }
+      );
 
-    save(updated);
+      setReply("");
+
+      loadChats();
+
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // SEND REPLY
-  const sendMessage = async () => {
-  if (!input.trim()) return;
-
-  try {
-    await axios.post(
-      "https://jni-backend.onrender.com/api/chat",
-      {
-        sender: "admin",
-
-        message: input,
-      }
+  /* ================= DELETE MESSAGE ================= */
+  const deleteMessage = async (id) => {
+    const confirmDelete = window.confirm(
+      "Delete this message?"
     );
 
-    setInput("");
+    if (!confirmDelete) return;
 
-    loadChats();
+    try {
+      await axios.delete(
+        `https://jni-backend.onrender.com/api/chat/${id}`
+      );
 
-  } catch (error) {
-    console.log(error);
-  }
-};
+      loadChats();
 
-  // DELETE MESSAGE
-  const deleteMessage = (id) => {
-    const updated = allChats.filter(
-      (m) => m.id !== id
-    );
-
-    save(updated);
-  };
-
-  // START EDIT
-  const startEdit = (msg) => {
-    setEditingId(msg.id);
-    setEditText(msg.text);
-  };
-
-  // SAVE EDIT
-  const saveEdit = (id) => {
-    if (!editText.trim()) return;
-
-    const updated = allChats.map((m) =>
-      m.id === id
-        ? {
-            ...m,
-            text: editText,
-          }
-        : m
-    );
-
-    save(updated);
-
-    setEditingId(null);
-    setEditText("");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -161,7 +136,7 @@ export default function AdminChat() {
           users.map((u) => {
             const unread = allChats.filter(
               (m) =>
-                m.user === u &&
+                m.userEmail === u &&
                 m.sender !== "admin" &&
                 !m.read
             ).length;
@@ -183,9 +158,7 @@ export default function AdminChat() {
                       : "#fff",
                 }}
               >
-                <div>
-                  🟢 {u}
-                </div>
+                <div>🟢 {u}</div>
 
                 {unread > 0 && (
                   <span style={styles.badge}>
@@ -209,7 +182,7 @@ export default function AdminChat() {
             <div style={styles.messages}>
               {messages.map((msg) => (
                 <div
-                  key={msg.id}
+                  key={msg._id}
                   style={{
                     display: "flex",
                     justifyContent:
@@ -234,77 +207,23 @@ export default function AdminChat() {
                           : "#fff",
                     }}
                   >
-                    {editingId === msg.id ? (
-                      <>
-                        <input
-                          value={editText}
-                          onChange={(e) =>
-                            setEditText(
-                              e.target.value
-                            )
-                          }
-                          style={styles.editInput}
-                        />
+                    <div>{msg.message}</div>
 
-                        <div style={styles.editRow}>
-                          <button
-                            onClick={() =>
-                              saveEdit(msg.id)
-                            }
-                            style={
-                              styles.smallBtn
-                            }
-                          >
-                            Save
-                          </button>
-
-                          <button
-                            onClick={() =>
-                              setEditingId(
-                                null
-                              )
-                            }
-                            style={
-                              styles.smallBtnCancel
-                            }
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div>{msg.text}</div>
-
-                        <small style={styles.time}>
-                          {msg.time}
-                        </small>
-                      </>
-                    )}
+                    <small style={styles.time}>
+                      {new Date(
+                        msg.createdAt
+                      ).toLocaleTimeString()}
+                    </small>
                   </div>
 
-                  {/* ADMIN ONLY ACTIONS */}
-                  {msg.sender === "admin" && (
-                    <div style={styles.actions}>
-                      <button
-                        onClick={() =>
-                          startEdit(msg)
-                        }
-                        style={styles.iconBtn}
-                      >
-                        ✏️
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          deleteMessage(msg.id)
-                        }
-                        style={styles.iconBtn}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  )}
+                  <button
+                    onClick={() =>
+                      deleteMessage(msg._id)
+                    }
+                    style={styles.iconBtn}
+                  >
+                    🗑️
+                  </button>
                 </div>
               ))}
 
@@ -368,6 +287,7 @@ const styles = {
   noUsers: {
     opacity: 0.7,
     marginTop: "20px",
+    color: "#fff",
   },
 
   user: {
@@ -431,12 +351,6 @@ const styles = {
     opacity: 0.7,
   },
 
-  actions: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-  },
-
   iconBtn: {
     border: "none",
     borderRadius: "6px",
@@ -472,36 +386,6 @@ const styles = {
     margin: "auto",
     opacity: 0.7,
     fontSize: "18px",
-  },
-
-  editInput: {
-    width: "100%",
-    padding: "8px",
-    borderRadius: "8px",
-    border: "none",
-    marginBottom: "6px",
-  },
-
-  editRow: {
-    display: "flex",
-    gap: "6px",
-  },
-
-  smallBtn: {
-    background: "#4caf50",
-    border: "none",
-    padding: "5px 8px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    color: "#fff",
-  },
-
-  smallBtnCancel: {
-    background: "#f44336",
-    border: "none",
-    padding: "5px 8px",
-    borderRadius: "6px",
-    cursor: "pointer",
     color: "#fff",
   },
 };

@@ -9,6 +9,7 @@ export default function Listings() {
     category: "",
     location: "",
     roomType: "",
+    customRoomType: "",
     price: "",
     description: "",
     image: null,
@@ -43,24 +44,6 @@ export default function Listings() {
   /* CREATE LISTING */
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    let imageUrl = "";
-
-if (form.image) {
-  const imageData = new FormData();
-
-  imageData.append(
-    "image",
-    form.image
-  );
-
-  const uploadRes = await axios.post(
-    "https://jni-backend.onrender.com/api/upload",
-    imageData
-  );
-
-  imageUrl = uploadRes.data.imageUrl;
-}
 
     if (
       !form.title ||
@@ -73,28 +56,67 @@ if (form.image) {
     }
 
     try {
-  await axios.post(
-    "https://jni-backend.onrender.com/api/listings",
-    form,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem(
-          "jni_token"
-        )}`,
-      },
-    }
-  );
+      let imageUrl = "";
 
-  alert("Listing added ✅");
-  
+      /* IMAGE UPLOAD */
+      if (form.image) {
+        const imageData = new FormData();
+
+        imageData.append(
+          "image",
+          form.image
+        );
+
+        const uploadRes = await axios.post(
+          "https://jni-backend.onrender.com/api/upload",
+          imageData
+        );
+
+        imageUrl = uploadRes.data.imageUrl;
+      }
+
+      /* FINAL ROOM TYPE */
+      const finalRoomType =
+        form.roomType === "Custom"
+          ? form.customRoomType
+          : form.roomType;
+
+      /* FINAL FORM */
+      const finalForm = {
+        title: form.title,
+        category: form.category,
+        location: form.location,
+        roomType: finalRoomType,
+        price: form.price,
+        description: form.description,
+        image: imageUrl,
+      };
+
+      /* TOKEN */
+      const token =
+        localStorage.getItem("token");
+
+      await axios.post(
+        "https://jni-backend.onrender.com/api/listings",
+        finalForm,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Listing added ✅");
+
       setForm({
         title: "",
         category: "",
         location: "",
         roomType: "",
+        customRoomType: "",
         price: "",
         description: "",
-        image: "",
+        image: null,
       });
 
       fetchListings();
@@ -115,8 +137,16 @@ if (form.image) {
     if (!confirmDelete) return;
 
     try {
+      const token =
+        localStorage.getItem("token");
+
       await axios.delete(
-        `https://jni-backend.onrender.com/api/listings/${id}`
+        `https://jni-backend.onrender.com/api/listings/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       fetchListings();
@@ -161,28 +191,14 @@ if (form.image) {
           <option>Hostels</option>
           <option>Apartments</option>
           <option>Airbnb Stays</option>
-          <option>
-            Vacation Homes
-          </option>
+          <option>Vacation Homes</option>
           <option>Resorts</option>
-          <option>
-            Guest Houses
-          </option>
-          <option>
-            Meeting Rooms
-          </option>
-          <option>
-            Office Spaces
-          </option>
-          <option>
-            Event Venues
-          </option>
-          <option>
-            Conference Rooms
-          </option>
-          <option>
-            Studio Rentals
-          </option>
+          <option>Guest Houses</option>
+          <option>Meeting Rooms</option>
+          <option>Office Spaces</option>
+          <option>Event Venues</option>
+          <option>Conference Rooms</option>
+          <option>Studio Rentals</option>
         </select>
 
         <input
@@ -194,35 +210,69 @@ if (form.image) {
           style={styles.input}
         />
 
-        <input
-          type="text"
+        {/* ROOM TYPE SELECT */}
+        <select
           name="roomType"
-          placeholder="Room Type"
           value={form.roomType}
           onChange={handleChange}
           style={styles.input}
-        />
+        >
+          <option value="">
+            Select Room Type
+          </option>
+
+          <option>Single Room</option>
+          <option>Double Room</option>
+          <option>Twin Room</option>
+          <option>Deluxe Room</option>
+          <option>Executive Suite</option>
+          <option>Presidential Suite</option>
+          <option>Family Room</option>
+          <option>Studio</option>
+          <option>Bedsitter</option>
+          <option>1 Bedroom</option>
+          <option>2 Bedroom</option>
+          <option>3 Bedroom</option>
+          <option>Penthouse</option>
+          <option>Office Space</option>
+          <option>Conference Room</option>
+          <option>Event Hall</option>
+          <option>Custom</option>
+        </select>
+
+        {/* CUSTOM ROOM TYPE */}
+        {form.roomType === "Custom" && (
+          <input
+            type="text"
+            name="customRoomType"
+            placeholder="Enter custom room type"
+            value={form.customRoomType}
+            onChange={handleChange}
+            style={styles.input}
+          />
+        )}
 
         <input
           type="text"
           name="price"
-          placeholder="Price"
+          placeholder="Price range"
           value={form.price}
           onChange={handleChange}
           style={styles.input}
         />
 
+        {/* IMAGE */}
         <input
-  type="file"
-  accept="image/*"
-  onChange={(e) =>
-    setForm({
-      ...form,
-      image: e.target.files[0],
-    })
-  }
-  style={styles.input}
-/>
+          type="file"
+          accept="image/*"
+          onChange={(e) =>
+            setForm({
+              ...form,
+              image: e.target.files[0],
+            })
+          }
+          style={styles.input}
+        />
 
         <textarea
           name="description"

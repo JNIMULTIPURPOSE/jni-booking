@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Inbox from "./Inbox";
 import Listings from "./Listings";
 import AdminChat from "./AdminChat";
@@ -6,13 +6,8 @@ import NotificationCenter from "./NotificationCenter";
 import axios from "axios";
 
 export default function AdminDashboard() {
-  const [active, setActive] = useState("inbox");
-
-  const [pendingCount, setPendingCount] =
-    useState(0);
-
-  const [chatCount, setChatCount] =
-    useState(0);
+  const [active, setActive] =
+    useState("dashboard");
 
   const [stats, setStats] = useState({
     users: 0,
@@ -20,72 +15,51 @@ export default function AdminDashboard() {
     bookings: 0,
   });
 
-  /* ================= LOAD DASHBOARD STATS ================= */
-  useEffect(() => {
-    fetchDashboardStats();
+  const [pendingCount, setPendingCount] =
+    useState(0);
 
-    loadLocalCounts();
+  const [chatCount, setChatCount] =
+    useState(0);
 
-    window.addEventListener(
-      "storage",
-      loadLocalCounts
-    );
-
-    return () => {
-      window.removeEventListener(
-        "storage",
-        loadLocalCounts
-      );
-    };
-  }, []);
-
-  /* ================= API STATS ================= */
-  const fetchDashboardStats = async () => {
+  /* ================= FETCH LIVE STATS ================= */
+  const fetchStats = async () => {
     try {
       const res = await axios.get(
         "https://jni-backend.onrender.com/api/admin/stats"
       );
 
-      setStats(res.data);
+      setStats({
+        users: res.data.users,
+        listings: res.data.listings,
+        bookings: res.data.bookings,
+      });
 
-    } catch (err) {
-      console.log(
-        "Dashboard stats error",
-        err
+      setPendingCount(
+        res.data.pending
       );
+
+      setChatCount(
+        res.data.unread
+      );
+
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  /* ================= LOCAL COUNTS ================= */
-  const loadLocalCounts = () => {
-    // BOOKINGS
-    const bookings =
-      JSON.parse(
-        localStorage.getItem("jni_bookings")
-      ) || [];
+  /* ================= AUTO REFRESH ================= */
+  useEffect(() => {
+    fetchStats();
 
-    const pending = bookings.filter(
-      (b) => b.status === "Pending"
-    ).length;
+    const interval = setInterval(() => {
+      fetchStats();
+    }, 5000);
 
-    setPendingCount(pending);
+    return () => clearInterval(interval);
 
-    // CHATS
-    const chats =
-      JSON.parse(
-        localStorage.getItem("jni_chat")
-      ) || [];
+  }, []);
 
-    const unread = chats.filter(
-      (c) =>
-        c.sender !== "admin" &&
-        !c.read
-    ).length;
-
-    setChatCount(unread);
-  };
-
-  /* ================= RENDER PAGES ================= */
+  /* ================= RENDER CONTENT ================= */
   const renderContent = () => {
     if (active === "inbox") {
       return <Inbox />;
@@ -190,7 +164,15 @@ export default function AdminDashboard() {
             }
             style={styles.link}
           >
-            🔔 Notifications
+            <span>
+              🔔 Notifications
+            </span>
+
+            {chatCount > 0 && (
+              <span style={styles.badge}>
+                {chatCount}
+              </span>
+            )}
           </button>
         </div>
 

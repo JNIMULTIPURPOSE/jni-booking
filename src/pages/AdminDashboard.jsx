@@ -80,6 +80,9 @@ export default function AdminDashboard() {
         />
       );
     }
+    
+    const isMobile =
+  window.innerWidth < 768;
 
     return (
       <div style={styles.welcomeCard}>
@@ -99,7 +102,13 @@ export default function AdminDashboard() {
   return (
     <div style={styles.container}>
       {/* ================= SIDEBAR ================= */}
-      <div style={styles.sidebar}>
+      <div
+  style={{
+    ...styles.sidebar,
+    ...(isMobile &&
+      styles.mobileSidebar),
+  }}
+>
         <div>
           <h2 style={styles.logo}>
             JNI Admin
@@ -203,7 +212,13 @@ export default function AdminDashboard() {
         </h1>
 
         {/* ================= STATS ================= */}
-        <div style={styles.statsGrid}>
+        <div
+  style={{
+    ...styles.statsGrid,
+    ...(isMobile &&
+      styles.mobileStatsGrid),
+  }}
+>
           <div style={styles.statCard}>
             <h3 style={styles.statNumber}>
               {stats.users}
@@ -238,7 +253,13 @@ export default function AdminDashboard() {
         </div>
 
         {/* ================= PAGE CONTENT ================= */}
-        <div style={styles.pageContent}>
+        <div
+  style={{
+    ...styles.pageContent,
+    ...(isMobile &&
+      styles.mobilePageContent),
+  }}
+>
           {renderContent()}
         </div>
       </div>
@@ -385,4 +406,26 @@ const styles = {
     lineHeight: "1.7",
     boxSizing: "border-box",
   },
+
+  mobileSidebar: {
+  width: "100%",
+  minWidth: "100%",
+  borderRight: "none",
+  borderBottom:
+    "1px solid rgba(255,255,255,0.08)",
+},
+
+mobileContent: {
+  width: "100%",
+  minWidth: "100%",
+  padding: "15px",
+},
+
+mobileStatsGrid: {
+  gridTemplateColumns: "1fr",
+},
+
+mobilePageContent: {
+  padding: "12px",
+},
 };

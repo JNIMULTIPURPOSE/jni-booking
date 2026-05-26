@@ -249,6 +249,7 @@ export default function AdminDashboard() {
 const styles = {
   container: {
     display: "flex",
+    flexWrap: "wrap",
     minHeight: "100vh",
     fontFamily: "Arial",
     background: "#01150d",
@@ -257,6 +258,7 @@ const styles = {
   /* SIDEBAR */
   sidebar: {
     width: "250px",
+    minWidth: "250px",
     background: "#022c1a",
     color: "white",
     padding: "20px",
@@ -265,12 +267,15 @@ const styles = {
     justifyContent: "space-between",
     borderRight:
       "1px solid rgba(255,255,255,0.08)",
+    boxSizing: "border-box",
   },
 
   logo: {
     color: "#ffd54f",
     textAlign: "center",
     marginBottom: "30px",
+    fontSize: "28px",
+    fontWeight: "bold",
   },
 
   link: {
@@ -289,6 +294,7 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     transition: "0.3s",
+    boxSizing: "border-box",
   },
 
   badge: {
@@ -312,21 +318,27 @@ const styles = {
     borderRadius: "12px",
     cursor: "pointer",
     fontWeight: "bold",
+    width: "100%",
+    boxSizing: "border-box",
   },
 
   /* CONTENT */
   content: {
     flex: 1,
+    minWidth: "300px",
     padding: "30px",
     background:
       "linear-gradient(135deg,#033d24,#046b3b,#000,#d4af37)",
     color: "white",
     overflowY: "auto",
+    boxSizing: "border-box",
   },
 
   title: {
     color: "#ffd54f",
     marginBottom: "25px",
+    fontSize: "32px",
+    fontWeight: "bold",
   },
 
   /* STATS */
@@ -346,12 +358,14 @@ const styles = {
     border:
       "1px solid rgba(255,255,255,0.08)",
     backdropFilter: "blur(8px)",
+    boxSizing: "border-box",
   },
 
   statNumber: {
     fontSize: "34px",
     color: "#ffd54f",
     marginBottom: "10px",
+    fontWeight: "bold",
   },
 
   pageContent: {
@@ -360,6 +374,7 @@ const styles = {
     borderRadius: "20px",
     padding: "20px",
     minHeight: "400px",
+    boxSizing: "border-box",
   },
 
   welcomeCard: {
@@ -368,5 +383,6 @@ const styles = {
     padding: "30px",
     borderRadius: "16px",
     lineHeight: "1.7",
+    boxSizing: "border-box",
   },
 };

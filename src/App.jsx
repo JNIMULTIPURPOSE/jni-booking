@@ -1,4 +1,8 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 /* AUTH */
 import Signup from "./Signup";
@@ -6,7 +10,7 @@ import Login from "./Login";
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedAdminRoute from "./ProtectedAdminRoute";
 
-/* MAIN HOME */
+/* MAIN */
 import Home from "./Home";
 
 /* ADMIN */
@@ -28,7 +32,7 @@ import EventVenues from "./pages/EventVenues";
 import ConferenceRooms from "./pages/ConferenceRooms";
 import StudioRentals from "./pages/StudioRentals";
 
-/* HOSTEL SUBPAGES */
+/* HOSTELS */
 import QwetuHostels from "./pages/QwetuHostels";
 import QejaniHostels from "./pages/QejaniHostels";
 import OtherHostels from "./pages/OtherHostels";
@@ -36,24 +40,12 @@ import OtherHostels from "./pages/OtherHostels";
 export default function App() {
   return (
     <Routes>
+
+      {/* DEFAULT */}
       <Route
-  path="/"
-  element={<Navigate to="/home" />}
-/>
-
-<Route path="/login" element={<Login />} />
-
-<Route path="/home" element={<Home />} />
-
-<Route
-  path="/admin-login"
-  element={<AdminLogin />}
-/>
-
-<Route
-  path="/admin"
-  element={<AdminDashboard />}
-/>
+        path="/"
+        element={<Navigate to="/login" />}
+      />
 
       {/* AUTH */}
       <Route
@@ -94,107 +86,154 @@ export default function App() {
       {/* PROPERTY PAGES */}
       <Route
         path="/hotels"
-        element={<Hotels />}
+        element={
+          <ProtectedRoute>
+            <Hotels />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/motels"
-        element={<Motels />}
+        element={
+          <ProtectedRoute>
+            <Motels />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/hostels"
-        element={<Hostels />}
+        element={
+          <ProtectedRoute>
+            <Hostels />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/apartments"
-        element={<Apartments />}
+        element={
+          <ProtectedRoute>
+            <Apartments />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/airbnb"
-        element={<AirbnbStays />}
+        element={
+          <ProtectedRoute>
+            <AirbnbStays />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/vacation-homes"
-        element={<VacationHomes />}
+        element={
+          <ProtectedRoute>
+            <VacationHomes />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/resorts"
-        element={<Resorts />}
+        element={
+          <ProtectedRoute>
+            <Resorts />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/guest-houses"
-        element={<GuestHouses />}
+        element={
+          <ProtectedRoute>
+            <GuestHouses />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/meeting-rooms"
-        element={<MeetingRooms />}
+        element={
+          <ProtectedRoute>
+            <MeetingRooms />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/office-spaces"
-        element={<OfficeSpaces />}
+        element={
+          <ProtectedRoute>
+            <OfficeSpaces />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/event-venues"
-        element={<EventVenues />}
+        element={
+          <ProtectedRoute>
+            <EventVenues />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/conference-rooms"
-        element={<ConferenceRooms />}
+        element={
+          <ProtectedRoute>
+            <ConferenceRooms />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/studio-rentals"
-        element={<StudioRentals />}
+        element={
+          <ProtectedRoute>
+            <StudioRentals />
+          </ProtectedRoute>
+        }
       />
 
       {/* HOSTEL BRANDS */}
       <Route
         path="/qwetu-hostels"
-        element={<QwetuHostels />}
+        element={
+          <ProtectedRoute>
+            <QwetuHostels />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/qejani-hostels"
-        element={<QejaniHostels />}
+        element={
+          <ProtectedRoute>
+            <QejaniHostels />
+          </ProtectedRoute>
+        }
       />
 
       <Route
         path="/other-hostels"
-        element={<OtherHostels />}
+        element={
+          <ProtectedRoute>
+            <OtherHostels />
+          </ProtectedRoute>
+        }
       />
 
       {/* 404 */}
       <Route
         path="*"
         element={
-          <div
-            style={{
-              minHeight: "100vh",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              background:
-                "linear-gradient(135deg,#033d24,#046b3b,#000,#d4af37)",
-              color: "white",
-              fontFamily: "Arial",
-              flexDirection: "column",
-              gap: "10px",
-            }}
-          >
-            <h1>404</h1>
-
-            <p>Page not found</p>
-          </div>
+          <Navigate to="/login" />
         }
       />
     </Routes>

@@ -55,7 +55,7 @@ export default function App() {
 
       <Route
         path="/login"
-        element={<Login />}
+        element={<home />}
       />
 
       {/* USER HOME */}

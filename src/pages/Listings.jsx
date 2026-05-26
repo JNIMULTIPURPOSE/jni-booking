@@ -411,12 +411,12 @@ const styles = {
 
   image: {
     width: "100%",
-    height: "180px",
+    height: "300px",
     objectFit: "cover",
   },
 
   noImage: {
-    height: "180px",
+    height: "150px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

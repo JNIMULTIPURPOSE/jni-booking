@@ -1,10 +1,11 @@
 import ListingCard from "../components/ListingCard";
+import RoomPageLayout from "./RoomPageLayout";
 
 export default function AirbnbStays() {
   const listings = [
-    { title: "Modern Airbnb Loft", location: "Kileleshwa, Nairobi", price: 32000 },
-    { title: "City View Studio", location: "CBD Nairobi", price: 22000 },
-    { title: "Cozy Airbnb Apartment", location: "Karen, Nairobi", price: 28000 },
+    { title: "Modern Airbnb Loft", location: "Kileleshwa, Nairobi", price: Enquire },
+    { title: "City View Studio", location: "CBD Nairobi", price: Enquire },
+    { title: "Cozy Airbnb Apartment", location: "Karen, Nairobi", price: Enquire },
   ];
 
   return (

@@ -132,14 +132,16 @@ export default function Home() {
         </button>
 
         <button
-  style={styles.sideItem}
-  onClick={() => {
-    localStorage.removeItem("jni_logged_in");
-    window.location.href = "/login";
-  }}
+             style={styles.sideItem}
+           onClick={() => {
+            localStorage.removeItem("jni_user");
+            localStorage.removeItem("jni_token");
+
+            window.location.href = "/login";
+           }}
 >
-  🚪 Logout
-</button>
+           🚪 Logout
+        </button>
       </div>
 
       {/* MAIN CONTENT */}

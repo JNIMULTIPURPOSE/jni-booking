@@ -22,6 +22,7 @@ export default function RoomPageLayout({
       name: "",
       phone: "",
       email: "",
+      location: "",
       checkin: "",
       notes: "",
     });
@@ -88,6 +89,7 @@ export default function RoomPageLayout({
       name: "",
       phone: "",
       email: "",
+      location: "",
       checkin: "",
       notes: "",
     });
@@ -455,7 +457,7 @@ searchInput: {
   grid: {
     display: "grid",
     gridTemplateColumns:
-      "repeat(auto-fit,minmax(220px,1fr))",
+      "repeat(auto-fit,minmax(100px,0.5fr))",
     gap: "18px",
   },
 
@@ -472,8 +474,8 @@ searchInput: {
 
   image: {
     width: "100%",
-    height: "160px",
-    objectFit: "cover",
+    height: "400px",
+    objectFit: "fill",
   },
 
   placeholder: {

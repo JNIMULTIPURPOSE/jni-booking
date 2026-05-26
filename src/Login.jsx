@@ -1,6 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import {
+  useNavigate,
+  Link,
+} from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,16 +13,22 @@ export default function Login() {
     password: "",
   });
 
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [message, setMessage] =
+    useState("");
 
+  const [loading, setLoading] =
+    useState(false);
+
+  /* HANDLE INPUT */
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.value,
     });
   };
 
+  /* LOGIN */
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -32,30 +41,38 @@ export default function Login() {
         form
       );
 
-      console.log(res.data);
-
       /* SAVE USER */
       localStorage.setItem(
-  "user",
-  JSON.stringify(res.data.user)
-);
+        "jni_user",
+        JSON.stringify(res.data.user)
+      );
 
-localStorage.setItem(
-  "token",
-  res.data.token
-);
+      localStorage.setItem(
+        "jni_token",
+        res.data.token
+      );
 
-      setMessage("Login successful ✅");
+      /* SAVE EMAIL FOR CHAT */
+      localStorage.setItem(
+        "jni_user_email",
+        res.data.user.email
+      );
 
+      setMessage(
+        "Login successful ✅"
+      );
+
+      /* REDIRECT */
       setTimeout(() => {
-        navigate("/");
-      }, 1000);
+        navigate("/home");
+      }, 800);
 
     } catch (err) {
       console.log(err);
 
       setMessage(
-        err.response?.data?.message ||
+        err.response?.data
+          ?.message ||
           "Login failed"
       );
     }
@@ -74,7 +91,9 @@ localStorage.setItem(
           Welcome back
         </p>
 
-        <form onSubmit={handleLogin}>
+        <form
+          onSubmit={handleLogin}
+        >
           <input
             type="email"
             name="email"
@@ -141,11 +160,13 @@ const styles = {
   card: {
     width: "100%",
     maxWidth: "400px",
-    background: "rgba(255,255,255,0.08)",
+    background:
+      "rgba(255,255,255,0.08)",
     borderRadius: "18px",
     padding: "35px",
     backdropFilter: "blur(8px)",
-    border: "1px solid rgba(255,255,255,0.15)",
+    border:
+      "1px solid rgba(255,255,255,0.15)",
     color: "white",
     boxShadow:
       "0 8px 30px rgba(0,0,0,0.35)",
@@ -171,6 +192,7 @@ const styles = {
     border: "none",
     outline: "none",
     fontSize: "15px",
+    boxSizing: "border-box",
   },
 
   button: {
@@ -188,6 +210,7 @@ const styles = {
   message: {
     marginTop: "15px",
     textAlign: "center",
+    fontWeight: "bold",
   },
 
   signupText: {

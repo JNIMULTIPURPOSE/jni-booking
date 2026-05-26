@@ -44,7 +44,7 @@ export default function App() {
       {/* DEFAULT */}
       <Route
         path="/"
-        element={<Navigate to="/Home" />}
+        element={<Navigate to="/login" />}
       />
 
       {/* AUTH */}

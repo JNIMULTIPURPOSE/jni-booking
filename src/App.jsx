@@ -36,7 +36,10 @@ import OtherHostels from "./pages/OtherHostels";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Signup />} />
+      <Route
+  path="/"
+  element={<Navigate to="/home" />}
+/>
 
 <Route path="/login" element={<Login />} />
 

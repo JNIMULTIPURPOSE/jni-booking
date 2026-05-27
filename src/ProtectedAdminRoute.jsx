@@ -3,10 +3,12 @@ import { Navigate } from "react-router-dom";
 export default function ProtectedAdminRoute({
   children,
 }) {
-  const admin =
-    localStorage.getItem("jni_admin");
+  const adminToken =
+    localStorage.getItem(
+      "jni_admin_token"
+    );
 
-  if (!admin) {
+  if (!adminToken) {
     return (
       <Navigate to="/admin-login" />
     );

@@ -21,6 +21,29 @@ export default function AdminDashboard() {
   const [chatCount, setChatCount] =
     useState(0);
 
+  const [isMobile, setIsMobile] =
+    useState(window.innerWidth < 768);
+
+  /* ================= SCREEN SIZE ================= */
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(
+        window.innerWidth < 768
+      );
+    };
+
+    window.addEventListener(
+      "resize",
+      handleResize
+    );
+
+    return () =>
+      window.removeEventListener(
+        "resize",
+        handleResize
+      );
+  }, []);
+
   /* ================= FETCH LIVE STATS ================= */
   const fetchStats = async () => {
     try {
@@ -29,21 +52,26 @@ export default function AdminDashboard() {
       );
 
       setStats({
-        users: res.data.users,
-        listings: res.data.listings,
-        bookings: res.data.bookings,
+        users: res.data.users || 0,
+        listings:
+          res.data.listings || 0,
+        bookings:
+          res.data.bookings || 0,
       });
 
       setPendingCount(
-        res.data.pending
+        res.data.pending || 0
       );
 
       setChatCount(
-        res.data.unread
+        res.data.unread || 0
       );
 
     } catch (error) {
-      console.log(error);
+      console.log(
+        "Dashboard Error:",
+        error
+      );
     }
   };
 
@@ -55,8 +83,8 @@ export default function AdminDashboard() {
       fetchStats();
     }, 5000);
 
-    return () => clearInterval(interval);
-
+    return () =>
+      clearInterval(interval);
   }, []);
 
   /* ================= RENDER CONTENT ================= */
@@ -80,9 +108,6 @@ export default function AdminDashboard() {
         />
       );
     }
-    
-    const isMobile =
-  window.innerWidth < 768;
 
     return (
       <div style={styles.welcomeCard}>
@@ -101,20 +126,19 @@ export default function AdminDashboard() {
 
   return (
     <div style={styles.container}>
-      {/* ================= SIDEBAR ================= */}
+      {/* SIDEBAR */}
       <div
-  style={{
-    ...styles.sidebar,
-    ...(isMobile &&
-      styles.mobileSidebar),
-  }}
->
+        style={{
+          ...styles.sidebar,
+          ...(isMobile &&
+            styles.mobileSidebar),
+        }}
+      >
         <div>
           <h2 style={styles.logo}>
             JNI Admin
           </h2>
 
-          {/* DASHBOARD */}
           <button
             onClick={() =>
               setActive("dashboard")
@@ -124,7 +148,6 @@ export default function AdminDashboard() {
             📊 Dashboard
           </button>
 
-          {/* INBOX */}
           <button
             onClick={() =>
               setActive("inbox")
@@ -140,7 +163,6 @@ export default function AdminDashboard() {
             )}
           </button>
 
-          {/* LISTINGS */}
           <button
             onClick={() =>
               setActive("listings")
@@ -150,7 +172,6 @@ export default function AdminDashboard() {
             🏠 Listings
           </button>
 
-          {/* CHAT */}
           <button
             onClick={() =>
               setActive("chat")
@@ -166,10 +187,11 @@ export default function AdminDashboard() {
             )}
           </button>
 
-          {/* NOTIFICATIONS */}
           <button
             onClick={() =>
-              setActive("notifications")
+              setActive(
+                "notifications"
+              )
             }
             style={styles.link}
           >
@@ -205,20 +227,26 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      {/* ================= MAIN CONTENT ================= */}
-      <div style={styles.content}>
+      {/* MAIN CONTENT */}
+      <div
+        style={{
+          ...styles.content,
+          ...(isMobile &&
+            styles.mobileContent),
+        }}
+      >
         <h1 style={styles.title}>
           Admin Dashboard
         </h1>
 
-        {/* ================= STATS ================= */}
+        {/* STATS */}
         <div
-  style={{
-    ...styles.statsGrid,
-    ...(isMobile &&
-      styles.mobileStatsGrid),
-  }}
->
+          style={{
+            ...styles.statsGrid,
+            ...(isMobile &&
+              styles.mobileStatsGrid),
+          }}
+        >
           <div style={styles.statCard}>
             <h3 style={styles.statNumber}>
               {stats.users}
@@ -252,14 +280,14 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* ================= PAGE CONTENT ================= */}
+        {/* PAGE CONTENT */}
         <div
-  style={{
-    ...styles.pageContent,
-    ...(isMobile &&
-      styles.mobilePageContent),
-  }}
->
+          style={{
+            ...styles.pageContent,
+            ...(isMobile &&
+              styles.mobilePageContent),
+          }}
+        >
           {renderContent()}
         </div>
       </div>

@@ -10,64 +10,110 @@ export default function AdminLogin() {
   });
 
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Validate email
+    setLoading(true);
+    setMessage("");
+
+    // ADMIN VALIDATION
     if (form.email !== "admin@jni.com") {
       setMessage("Invalid admin email");
+      setLoading(false);
       return;
     }
 
-    // Validate password
     if (form.password !== "admin123") {
       setMessage("Wrong password");
+      setLoading(false);
       return;
     }
 
-    // Save admin session
-    localStorage.setItem("jni_admin", "true");
+    // SAVE ADMIN SESSION
+    localStorage.setItem(
+      "jni_admin",
+      JSON.stringify({
+        email: form.email,
+        role: "admin",
+      })
+    );
 
-    setMessage("Login successful... redirecting");
+    localStorage.setItem(
+      "jni_admin_token",
+      "admin_logged_in"
+    );
 
-    // Redirect to dashboard
+    setMessage(
+      "Login successful ✅ Redirecting..."
+    );
+
+    // REDIRECT
     setTimeout(() => {
       navigate("/admin");
-    }, 1000);
+    }, 1200);
   };
 
   return (
     <div style={styles.page}>
-      <h1 style={styles.title}>Admin Login</h1>
+      <div style={styles.card}>
+        <h1 style={styles.title}>
+          JNI Admin Panel
+        </h1>
 
-      <form onSubmit={handleLogin} style={styles.form}>
-        <input
-          type="email"
-          placeholder="Admin Email"
-          value={form.email}
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
-          style={styles.input}
-        />
+        <p style={styles.subtitle}>
+          Secure administrator access
+        </p>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
-          }
-          style={styles.input}
-        />
+        <form
+          onSubmit={handleLogin}
+          style={styles.form}
+        >
+          <input
+            type="email"
+            name="email"
+            placeholder="Admin Email"
+            value={form.email}
+            onChange={handleChange}
+            style={styles.input}
+            required
+          />
 
-        <button type="submit" style={styles.button}>
-          Login
-        </button>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            style={styles.input}
+            required
+          />
 
-        {message && <p style={styles.msg}>{message}</p>}
-      </form>
+          <button
+            type="submit"
+            style={styles.button}
+            disabled={loading}
+          >
+            {loading
+              ? "Logging in..."
+              : "Login"}
+          </button>
+        </form>
+
+        {message && (
+          <p style={styles.msg}>
+            {message}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -78,40 +124,71 @@ const styles = {
     background:
       "linear-gradient(135deg,#033d24,#046b3b,#000,#d4af37)",
     display: "flex",
-    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    padding: "20px",
     fontFamily: "Arial",
+  },
+
+  card: {
+    width: "100%",
+    maxWidth: "400px",
+    background:
+      "rgba(255,255,255,0.08)",
+    borderRadius: "20px",
+    padding: "35px",
+    backdropFilter: "blur(10px)",
+    border:
+      "1px solid rgba(255,255,255,0.12)",
     color: "white",
+    boxShadow:
+      "0 10px 30px rgba(0,0,0,0.4)",
   },
 
   title: {
     color: "#ffd54f",
-    marginBottom: "20px",
+    textAlign: "center",
+    marginBottom: "10px",
+    fontSize: "32px",
+  },
+
+  subtitle: {
+    textAlign: "center",
+    opacity: 0.8,
+    marginBottom: "28px",
+    lineHeight: "1.5",
   },
 
   form: {
-    display: "grid",
-    gap: "15px",
-    width: "300px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
   },
 
   input: {
-    padding: "12px",
-    borderRadius: "10px",
+    padding: "14px",
+    borderRadius: "12px",
     border: "none",
+    outline: "none",
+    fontSize: "15px",
+    background:
+      "rgba(255,255,255,0.95)",
   },
 
   button: {
-    padding: "12px",
+    padding: "14px",
     border: "none",
-    borderRadius: "10px",
+    borderRadius: "12px",
     background: "#ffd54f",
+    color: "#000",
     fontWeight: "bold",
+    fontSize: "15px",
     cursor: "pointer",
   },
 
   msg: {
+    marginTop: "18px",
     textAlign: "center",
+    fontWeight: "bold",
   },
 };

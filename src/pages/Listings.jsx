@@ -17,7 +17,7 @@ export default function Listings() {
     image: null,
   });
 
-  /* ================= FETCH LISTINGS ================= */
+  /* ================= FETCH ================= */
   const fetchListings = async () => {
     try {
       const res = await axios.get(
@@ -46,7 +46,7 @@ export default function Listings() {
     });
   };
 
-  /* ================= CREATE ================= */
+  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -59,12 +59,12 @@ export default function Listings() {
       let imageUrl = "";
 
       if (form.image) {
-        const imageData = new FormData();
-        imageData.append("image", form.image);
+        const data = new FormData();
+        data.append("image", form.image);
 
         const uploadRes = await axios.post(
           "https://jni-backend.onrender.com/api/upload",
-          imageData
+          data
         );
 
         imageUrl = uploadRes.data.imageUrl;
@@ -144,7 +144,7 @@ export default function Listings() {
     }
   };
 
-  /* ================= UI STATES ================= */
+  /* ================= STATES ================= */
   if (loading) return <div>Loading listings...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
 
@@ -152,13 +152,95 @@ export default function Listings() {
     <div>
       <h2 style={styles.heading}>🏠 Manage Listings</h2>
 
-      {/* FORM (UNCHANGED STYLE STRUCTURE) */}
+      {/* ================= FORM ================= */}
       <form onSubmit={handleSubmit} style={styles.form}>
-        <input name="title" placeholder="Title" onChange={handleChange} style={styles.input} />
-        <input name="category" placeholder="Category" onChange={handleChange} style={styles.input} />
-        <input name="location" placeholder="Location" onChange={handleChange} style={styles.input} />
-        <input name="roomType" placeholder="Room Type" onChange={handleChange} style={styles.input} />
-        <input name="price" placeholder="Price" onChange={handleChange} style={styles.input} />
+        <input
+          name="title"
+          placeholder="Property Title"
+          value={form.title}
+          onChange={handleChange}
+          style={styles.input}
+        />
+
+        {/* CATEGORY DROPDOWN (RESTORED) */}
+        <select
+          name="category"
+          value={form.category}
+          onChange={handleChange}
+          style={styles.input}
+        >
+          <option value="">Select Category</option>
+          <option>Hotels</option>
+          <option>Motels</option>
+          <option>Hostels</option>
+          <option>Apartments</option>
+          <option>Airbnb Stays</option>
+          <option>Vacation Homes</option>
+          <option>Resorts</option>
+          <option>Guest Houses</option>
+          <option>Meeting Rooms</option>
+          <option>Office Spaces</option>
+          <option>Event Venues</option>
+          <option>Conference Rooms</option>
+          <option>Studio Rentals</option>
+        </select>
+
+        <input
+          name="location"
+          placeholder="Location"
+          value={form.location}
+          onChange={handleChange}
+          style={styles.input}
+        />
+
+        {/* ROOM TYPE DROPDOWN (RESTORED) */}
+        <select
+          name="roomType"
+          value={form.roomType}
+          onChange={handleChange}
+          style={styles.input}
+        >
+          <option value="">Select Room Type</option>
+          <option>Single Room</option>
+          <option>Double Room</option>
+          <option>Deluxe Room</option>
+          <option>Executive Suite</option>
+          <option>Family Room</option>
+          <option>Studio</option>
+          <option>1 Bedroom</option>
+          <option>2 Bedroom</option>
+          <option>Penthouse</option>
+          <option>Conference Room</option>
+          <option>Event Hall</option>
+          <option value="Custom">Custom</option>
+        </select>
+
+        {/* CUSTOM ROOM TYPE (RESTORED CONDITIONAL INPUT) */}
+        {form.roomType === "Custom" && (
+          <input
+            name="customRoomType"
+            placeholder="Enter custom room type"
+            value={form.customRoomType}
+            onChange={handleChange}
+            style={styles.input}
+          />
+        )}
+
+        <input
+          name="price"
+          placeholder="Price"
+          value={form.price}
+          onChange={handleChange}
+          style={styles.input}
+        />
+
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={form.description}
+          onChange={handleChange}
+          style={styles.input}
+        />
 
         <input
           type="file"
@@ -172,7 +254,7 @@ export default function Listings() {
         </button>
       </form>
 
-      {/* 🔥 FIX: GRID RESTORED PROPERLY */}
+      {/* ================= GRID (UNCHANGED) ================= */}
       <div style={styles.grid}>
         {listings.length === 0 ? (
           <p>No listings found</p>
@@ -211,13 +293,12 @@ export default function Listings() {
   );
 }
 
-/* ================= ORIGINAL STYLES (UNCHANGED) ================= */
+/* ================= STYLES (UNCHANGED) ================= */
 const styles = {
   heading: {
     color: "#ffd54f",
     marginBottom: "20px",
   },
-
   form: {
     background: "rgba(255,255,255,0.08)",
     padding: "20px",
@@ -226,14 +307,12 @@ const styles = {
     display: "grid",
     gap: "12px",
   },
-
   input: {
     padding: "12px",
     borderRadius: "10px",
     border: "none",
     outline: "none",
   },
-
   button: {
     padding: "12px",
     background: "#ffd54f",
@@ -243,13 +322,11 @@ const styles = {
     fontWeight: "bold",
     cursor: "pointer",
   },
-
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
     gap: "20px",
   },
-
   card: {
     background: "rgba(255,255,255,0.08)",
     borderRadius: "14px",
@@ -257,13 +334,11 @@ const styles = {
     color: "white",
     border: "1px solid rgba(255,255,255,0.1)",
   },
-
   image: {
     width: "100%",
     height: "300px",
     objectFit: "cover",
   },
-
   noImage: {
     height: "150px",
     display: "flex",
@@ -271,24 +346,19 @@ const styles = {
     alignItems: "center",
     background: "rgba(255,255,255,0.05)",
   },
-
   content: {
     padding: "15px",
   },
-
   price: {
     color: "#ffd54f",
     fontWeight: "bold",
     marginTop: "8px",
   },
-
   description: {
     marginTop: "10px",
     opacity: 0.8,
-    lineHeight: "1.5",
     fontSize: "14px",
   },
-
   deleteBtn: {
     width: "100%",
     padding: "10px",

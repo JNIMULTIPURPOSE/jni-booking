@@ -22,10 +22,17 @@ export default function Listings() {
         "https://jni-backend.onrender.com/api/listings"
       );
 
-      setListings(res.data);
+      setListings(true);
+      SetError("");
 
     } catch (error) {
       console.log(error);
+      setError(
+        "Failed to load"
+      );
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -155,6 +162,22 @@ export default function Listings() {
       console.log(error);
     }
   };
+
+  if (loading) {
+  return (
+    <div style={styles.loading}>
+      Loading...
+    </div>
+  );
+}
+
+if (error) {
+  return (
+    <div style={styles.error}>
+      {error}
+    </div>
+  );
+}
 
   return (
     <div>
@@ -452,4 +475,23 @@ const styles = {
     fontWeight: "bold",
     cursor: "pointer",
   },
+
+  loading: {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "white",
+  fontSize: "20px",
+},
+
+error: {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "red",
+  fontSize: "18px",
+},
+
 };

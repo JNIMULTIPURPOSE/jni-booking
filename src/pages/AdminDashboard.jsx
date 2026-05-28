@@ -10,10 +10,16 @@ export default function AdminDashboard() {
     useState("dashboard");
 
   const [stats, setStats] = useState({
-    users: 0,
-    listings: 0,
-    bookings: 0,
-  });
+  users: 0,
+  listings: 0,
+  bookings: 0,
+});
+
+const [loading, setLoading] =
+  useState(true);
+
+const [error, setError] =
+  useState("");
 
   const [pendingCount, setPendingCount] =
     useState(0);
@@ -46,7 +52,9 @@ export default function AdminDashboard() {
 
   /* ================= FETCH LIVE STATS ================= */
   const fetchStats = async () => {
-    try {
+  try {
+    setLoading(true);
+    setError("");
       const res = await axios.get(
         "https://jni-backend.onrender.com/api/admin/stats"
       );
@@ -68,12 +76,16 @@ export default function AdminDashboard() {
       );
 
     } catch (error) {
-      console.log(
-        "Dashboard Error:",
-        error
-      );
-    }
-  };
+       console.log(error);
+
+    setError(
+      "Failed to load dashboard"
+    );
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   /* ================= AUTO REFRESH ================= */
   useEffect(() => {
@@ -123,6 +135,22 @@ export default function AdminDashboard() {
       </div>
     );
   };
+
+  if (loading) {
+  return (
+    <div style={styles.loading}>
+      Loading dashboard...
+    </div>
+  );
+}
+
+if (error) {
+  return (
+    <div style={styles.error}>
+      {error}
+    </div>
+  );
+}
 
   return (
     <div style={styles.container}>
@@ -455,5 +483,23 @@ mobileStatsGrid: {
 
 mobilePageContent: {
   padding: "12px",
+},
+
+loading: {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "white",
+  fontSize: "20px",
+},
+
+error: {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "red",
+  fontSize: "18px",
 },
 };

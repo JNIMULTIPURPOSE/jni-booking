@@ -40,9 +40,16 @@ export default function Chat() {
       setChat(filtered);
 
     } catch (error) {
-      console.log(error);
-    }
-  };
+    console.log(error);
+
+    setError(
+      "Failed to load dashboard"
+    );
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   /* ================= INITIAL LOAD ================= */
   useEffect(() => {
@@ -88,6 +95,22 @@ export default function Chat() {
       console.log(error);
     }
   };
+  
+  if (loading) {
+  return (
+    <div style={styles.loading}>
+      Loading...
+    </div>
+  );
+}
+
+if (error) {
+  return (
+    <div style={styles.error}>
+      {error}
+    </div>
+  );
+}
 
   return (
     <div style={styles.wrapper}>
@@ -351,4 +374,22 @@ const styles = {
 
     cursor: "pointer",
   },
+
+  loading: {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "white",
+  fontSize: "20px",
+},
+
+error: {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "red",
+  fontSize: "18px",
+},
 };

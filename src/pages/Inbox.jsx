@@ -7,6 +7,8 @@ export default function Inbox() {
   /* LOAD BOOKINGS */
   const fetchBookings = async () => {
     try {
+      setLoading(true);
+      setError("");
       const res = await axios.get(
         "https://jni-backend.onrender.com/api/bookings"
       );
@@ -57,8 +59,31 @@ export default function Inbox() {
 
     } catch (error) {
       console.log(error);
+
+          setError(
+        "Failed to load"
+      );
+
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+  return (
+    <div style={styles.loading}>
+      Loading...
+    </div>
+  );
+}
+
+if (error) {
+  return (
+    <div style={styles.error}>
+      {error}
+    </div>
+  );
+}
 
   return (
     <div>
@@ -315,4 +340,23 @@ const styles = {
     cursor: "pointer",
     fontWeight: "bold",
   },
+
+loading: {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "white",
+  fontSize: "20px",
+},
+
+error: {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "red",
+  fontSize: "18px",
+},
+
 };

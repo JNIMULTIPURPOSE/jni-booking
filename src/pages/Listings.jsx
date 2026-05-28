@@ -17,7 +17,7 @@ export default function Listings() {
     image: null,
   });
 
-  /* LOAD LISTINGS */
+  /* ================= FETCH LISTINGS ================= */
   const fetchListings = async () => {
     try {
       const res = await axios.get(
@@ -26,9 +26,9 @@ export default function Listings() {
 
       setListings(Array.isArray(res.data) ? res.data : []);
       setError("");
-    } catch (error) {
-      console.log(error);
-      setError("Failed to load");
+    } catch (err) {
+      console.log("FETCH ERROR:", err);
+      setError("Failed to load listings");
     } finally {
       setLoading(false);
     }
@@ -38,6 +38,7 @@ export default function Listings() {
     fetchListings();
   }, []);
 
+  /* ================= FORM HANDLER ================= */
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -45,7 +46,7 @@ export default function Listings() {
     });
   };
 
-  /* CREATE LISTING */
+  /* ================= CREATE LISTING ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -84,8 +85,10 @@ export default function Listings() {
         image: imageUrl,
       };
 
-      /* FIXED TOKEN KEY */
-      const token = localStorage.getItem("jni_token");
+      // FIXED TOKEN (supports both possible keys)
+      const token =
+        localStorage.getItem("jni_admin_token") ||
+        localStorage.getItem("jni_token");
 
       await axios.post(
         "https://jni-backend.onrender.com/api/listings",
@@ -111,19 +114,21 @@ export default function Listings() {
       });
 
       fetchListings();
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log("CREATE ERROR:", err);
       alert("Failed to add listing");
     }
   };
 
-  /* DELETE LISTING */
+  /* ================= DELETE ================= */
   const deleteListing = async (id) => {
     const confirmDelete = window.confirm("Delete this listing?");
     if (!confirmDelete) return;
 
     try {
-      const token = localStorage.getItem("jni_token");
+      const token =
+        localStorage.getItem("jni_admin_token") ||
+        localStorage.getItem("jni_token");
 
       await axios.delete(
         `https://jni-backend.onrender.com/api/listings/${id}`,
@@ -135,20 +140,104 @@ export default function Listings() {
       );
 
       fetchListings();
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log("DELETE ERROR:", err);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  /* ================= UI STATES ================= */
+  if (loading) return <div>Loading listings...</div>;
 
+  if (error)
+    return <div style={{ color: "red" }}>{error}</div>;
+
+  /* ================= UI ================= */
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h2>🏠 Manage Listings</h2>
 
-      {/* form unchanged */}
-      {/* listings UI unchanged */}
+      {/* ================= FORM ================= */}
+      <form onSubmit={handleSubmit}>
+        <input
+          name="title"
+          placeholder="Title"
+          value={form.title}
+          onChange={handleChange}
+        />
+
+        <input
+          name="category"
+          placeholder="Category"
+          value={form.category}
+          onChange={handleChange}
+        />
+
+        <input
+          name="location"
+          placeholder="Location"
+          value={form.location}
+          onChange={handleChange}
+        />
+
+        <input
+          name="roomType"
+          placeholder="Room Type"
+          value={form.roomType}
+          onChange={handleChange}
+        />
+
+        <input
+          name="price"
+          placeholder="Price"
+          value={form.price}
+          onChange={handleChange}
+        />
+
+        <input
+          type="file"
+          onChange={(e) =>
+            setForm({ ...form, image: e.target.files[0] })
+          }
+        />
+
+        <button type="submit">Add Listing</button>
+      </form>
+
+      {/* ================= LISTINGS ================= */}
+      <div style={{ marginTop: "20px" }}>
+        {listings.length === 0 ? (
+          <p>No listings found</p>
+        ) : (
+          listings.map((item) => (
+            <div
+              key={item._id}
+              style={{
+                border: "1px solid #ccc",
+                padding: "10px",
+                marginBottom: "10px",
+              }}
+            >
+              <h3>{item.title}</h3>
+              <p>{item.location}</p>
+              <p>{item.category}</p>
+              <p>{item.roomType}</p>
+              <p>{item.price}</p>
+
+              {item.image && (
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  style={{ width: "150px" }}
+                />
+              )}
+
+              <button onClick={() => deleteListing(item._id)}>
+                Delete
+              </button>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }

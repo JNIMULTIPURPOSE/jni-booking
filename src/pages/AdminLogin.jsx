@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -20,66 +21,65 @@ export default function AdminLogin() {
   };
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  setLoading(true);
-  setMessage("");
+    setLoading(true);
+    setMessage("");
 
-  try {
-    const res = await axios.post(
-      "https://jni-backend.onrender.com/api/admin/login",
-      {
-        email: form.email,
-        password: form.password,
+    try {
+      const res = await axios.post(
+        "https://jni-backend.onrender.com/api/admin/login",
+        {
+          email: form.email,
+          password: form.password,
+        }
+      );
+
+      console.log("LOGIN RESPONSE:", res.data);
+
+      // VALIDATE TOKEN STRICTLY
+      const token = res.data?.token;
+
+      if (!token || typeof token !== "string") {
+        setMessage("Login failed: Invalid token received");
+        return;
       }
-    );
 
-    // VALIDATE TOKEN FIRST
-    if (!res.data.token) {
-      setMessage("Login failed: No token received");
-      return;
+      // SAVE ADMIN DATA
+      localStorage.setItem(
+        "jni_admin",
+        JSON.stringify(res.data.admin || {})
+      );
+
+      // SAVE REAL JWT TOKEN (CRITICAL FIX)
+      localStorage.setItem("jni_admin_token", token);
+
+      setMessage("Login successful ✅ Redirecting...");
+
+      setTimeout(() => {
+        navigate("/admin");
+      }, 1200);
+
+    } catch (error) {
+      console.log("LOGIN ERROR:", error.response?.data || error.message);
+      setMessage(
+        error.response?.data?.message || "Invalid credentials"
+      );
+    } finally {
+      setLoading(false);
     }
-
-    // SAVE SESSION
-    localStorage.setItem(
-      "jni_admin",
-      JSON.stringify(res.data.admin || {})
-    );
-
-    localStorage.setItem(
-      "jni_admin_token",
-      res.data.token
-    );
-
-    setMessage("Login successful ✅ Redirecting...");
-
-    setTimeout(() => {
-      navigate("/admin");
-    }, 1200);
-
-  } catch (error) {
-    console.log(error);
-    setMessage("Invalid credentials");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <h1 style={styles.title}>
-          JNI Admin Panel
-        </h1>
+        <h1 style={styles.title}>JNI Admin Panel</h1>
 
         <p style={styles.subtitle}>
           Secure administrator access
         </p>
 
-        <form
-          onSubmit={handleLogin}
-          style={styles.form}
-        >
+        <form onSubmit={handleLogin} style={styles.form}>
           <input
             type="email"
             name="email"
@@ -105,17 +105,11 @@ export default function AdminLogin() {
             style={styles.button}
             disabled={loading}
           >
-            {loading
-              ? "Logging in..."
-              : "Login"}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        {message && (
-          <p style={styles.msg}>
-            {message}
-          </p>
-        )}
+        {message && <p style={styles.msg}>{message}</p>}
       </div>
     </div>
   );

@@ -6,8 +6,7 @@ import NotificationCenter from "./NotificationCenter";
 import axios from "axios";
 
 export default function AdminDashboard() {
-  const [active, setActive] =
-    useState("dashboard");
+  const [active, setActive] = useState("dashboard");
 
   const [stats, setStats] = useState({
     users: 0,
@@ -15,83 +14,54 @@ export default function AdminDashboard() {
     bookings: 0,
   });
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [pendingCount, setPendingCount] = useState(0);
+  const [chatCount, setChatCount] = useState(0);
 
-  const [error, setError] =
-    useState("");
-
-  const [pendingCount, setPendingCount] =
-    useState(0);
-
-  const [chatCount, setChatCount] =
-    useState(0);
-
-  const [isMobile, setIsMobile] =
-    useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   /* ================= SCREEN SIZE ================= */
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(
-        window.innerWidth < 768
-      );
+      setIsMobile(window.innerWidth < 768);
     };
 
-    window.addEventListener(
-      "resize",
-      handleResize
-    );
+    window.addEventListener("resize", handleResize);
 
     return () =>
-      window.removeEventListener(
-        "resize",
-        handleResize
-      );
+      window.removeEventListener("resize", handleResize);
   }, []);
 
   /* ================= FETCH LIVE STATS ================= */
   const fetchStats = async () => {
     try {
+      const token = localStorage.getItem("jni_admin_token");
+
       const res = await axios.get(
-        "https://jni-backend.onrender.com/api/admin/stats"
+        "https://jni-backend.onrender.com/api/admin/dashboard",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       setStats({
         users: res.data.users || 0,
-
-        listings:
-          res.data.listings || 0,
-
-        bookings:
-          res.data.bookings || 0,
+        listings: res.data.listings || 0,
+        bookings: res.data.bookings || 0,
       });
 
-      setPendingCount(
-        res.data.pending || 0
-      );
+      setPendingCount(res.data.pending || 0);
+      setChatCount(res.data.unreadChats || 0);
 
-      setChatCount(
-        res.data.unread || 0
-      );
-
-      // FIXED: Clear previous errors
       setError("");
-
     } catch (error) {
-
       console.log(error);
-
-      setError(
-        "Failed to load dashboard"
-      );
-
+      setError("Failed to load dashboard");
     } finally {
-
-      // FIXED:
-      // loading only ends once
       setLoading(false);
-
     }
   };
 
@@ -103,64 +73,35 @@ export default function AdminDashboard() {
       fetchStats();
     }, 5000);
 
-    return () =>
-      clearInterval(interval);
-
+    return () => clearInterval(interval);
   }, []);
 
   /* ================= RENDER CONTENT ================= */
   const renderContent = () => {
-    if (active === "inbox") {
-      return <Inbox />;
-    }
-
-    if (active === "listings") {
-      return <Listings />;
-    }
-
-    if (active === "chat") {
-      return <AdminChat />;
-    }
+    if (active === "inbox") return <Inbox />;
+    if (active === "listings") return <Listings />;
+    if (active === "chat") return <AdminChat />;
 
     if (active === "notifications") {
-      return (
-        <NotificationCenter
-          setActive={setActive}
-        />
-      );
+      return <NotificationCenter setActive={setActive} />;
     }
 
     return (
       <div style={styles.welcomeCard}>
-        <h2>
-          Welcome to JNI Admin Panel
-        </h2>
-
-        <p>
-          Manage bookings, chats,
-          listings and users from one
-          place.
-        </p>
+        <h2>Welcome to JNI Admin Panel</h2>
+        <p>Manage bookings, chats, listings and users from one place.</p>
       </div>
     );
   };
 
   /* ================= LOADING ================= */
   if (loading) {
-    return (
-      <div style={styles.loading}>
-        Loading dashboard...
-      </div>
-    );
+    return <div style={styles.loading}>Loading dashboard...</div>;
   }
 
   /* ================= ERROR ================= */
   if (error) {
-    return (
-      <div style={styles.error}>
-        {error}
-      </div>
-    );
+    return <div style={styles.error}>{error}</div>;
   }
 
   return (
@@ -169,80 +110,41 @@ export default function AdminDashboard() {
       <div
         style={{
           ...styles.sidebar,
-
-          ...(isMobile &&
-            styles.mobileSidebar),
+          ...(isMobile && styles.mobileSidebar),
         }}
       >
         <div>
-          <h2 style={styles.logo}>
-            JNI Admin
-          </h2>
+          <h2 style={styles.logo}>JNI Admin</h2>
 
-          <button
-            onClick={() =>
-              setActive("dashboard")
-            }
-            style={styles.link}
-          >
+          <button onClick={() => setActive("dashboard")} style={styles.link}>
             📊 Dashboard
           </button>
 
-          <button
-            onClick={() =>
-              setActive("inbox")
-            }
-            style={styles.link}
-          >
+          <button onClick={() => setActive("inbox")} style={styles.link}>
             <span>📥 Inbox</span>
-
             {pendingCount > 0 && (
-              <span style={styles.badge}>
-                {pendingCount}
-              </span>
+              <span style={styles.badge}>{pendingCount}</span>
             )}
           </button>
 
-          <button
-            onClick={() =>
-              setActive("listings")
-            }
-            style={styles.link}
-          >
+          <button onClick={() => setActive("listings")} style={styles.link}>
             🏠 Listings
           </button>
 
-          <button
-            onClick={() =>
-              setActive("chat")
-            }
-            style={styles.link}
-          >
+          <button onClick={() => setActive("chat")} style={styles.link}>
             <span>💬 Chat</span>
-
             {chatCount > 0 && (
-              <span style={styles.badge}>
-                {chatCount}
-              </span>
+              <span style={styles.badge}>{chatCount}</span>
             )}
           </button>
 
           <button
-            onClick={() =>
-              setActive(
-                "notifications"
-              )
-            }
+            onClick={() => setActive("notifications")}
             style={styles.link}
           >
-            <span>
-              🔔 Notifications
-            </span>
-
+            <span>🔔 Notifications</span>
             {chatCount > 0 && (
-              <span style={styles.badge}>
-                {chatCount}
-              </span>
+              <span style={styles.badge}>{chatCount}</span>
             )}
           </button>
         </div>
@@ -250,16 +152,9 @@ export default function AdminDashboard() {
         {/* LOGOUT */}
         <button
           onClick={() => {
-            localStorage.removeItem(
-              "jni_admin"
-            );
-
-            localStorage.removeItem(
-              "jni_admin_token"
-            );
-
-            window.location.href =
-              "/admin-login";
+            localStorage.removeItem("jni_admin");
+            localStorage.removeItem("jni_admin_token");
+            window.location.href = "/admin-login";
           }}
           style={styles.logout}
         >
@@ -271,53 +166,35 @@ export default function AdminDashboard() {
       <div
         style={{
           ...styles.content,
-
-          ...(isMobile &&
-            styles.mobileContent),
+          ...(isMobile && styles.mobileContent),
         }}
       >
-        <h1 style={styles.title}>
-          Admin Dashboard
-        </h1>
+        <h1 style={styles.title}>Admin Dashboard</h1>
 
         {/* STATS */}
         <div
           style={{
             ...styles.statsGrid,
-
-            ...(isMobile &&
-              styles.mobileStatsGrid),
+            ...(isMobile && styles.mobileStatsGrid),
           }}
         >
           <div style={styles.statCard}>
-            <h3 style={styles.statNumber}>
-              {stats.users}
-            </h3>
-
+            <h3 style={styles.statNumber}>{stats.users}</h3>
             <p>👤 Total Users</p>
           </div>
 
           <div style={styles.statCard}>
-            <h3 style={styles.statNumber}>
-              {stats.listings}
-            </h3>
-
+            <h3 style={styles.statNumber}>{stats.listings}</h3>
             <p>🏠 Listings</p>
           </div>
 
           <div style={styles.statCard}>
-            <h3 style={styles.statNumber}>
-              {stats.bookings}
-            </h3>
-
+            <h3 style={styles.statNumber}>{stats.bookings}</h3>
             <p>📅 Bookings</p>
           </div>
 
           <div style={styles.statCard}>
-            <h3 style={styles.statNumber}>
-              {pendingCount}
-            </h3>
-
+            <h3 style={styles.statNumber}>{pendingCount}</h3>
             <p>📥 Pending</p>
           </div>
         </div>
@@ -326,9 +203,7 @@ export default function AdminDashboard() {
         <div
           style={{
             ...styles.pageContent,
-
-            ...(isMobile &&
-              styles.mobilePageContent),
+            ...(isMobile && styles.mobilePageContent),
           }}
         >
           {renderContent()}

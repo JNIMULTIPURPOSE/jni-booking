@@ -85,7 +85,7 @@ export default function Listings() {
         image: imageUrl,
       };
 
-      // FIXED TOKEN (supports both possible keys)
+      // FIXED TOKEN SAFETY (no UI change needed)
       const token =
         localStorage.getItem("jni_admin_token") ||
         localStorage.getItem("jni_token");
@@ -145,24 +145,24 @@ export default function Listings() {
     }
   };
 
-  /* ================= UI STATES ================= */
-  if (loading) return <div>Loading listings...</div>;
+  /* ================= LOADING ================= */
+  if (loading) return <div style={styles.loading}>Loading listings...</div>;
 
-  if (error)
-    return <div style={{ color: "red" }}>{error}</div>;
+  /* ================= ERROR ================= */
+  if (error) return <div style={styles.error}>{error}</div>;
 
-  /* ================= UI ================= */
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>🏠 Manage Listings</h2>
+    <div>
+      <h2 style={styles.heading}>🏠 Manage Listings</h2>
 
       {/* ================= FORM ================= */}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={styles.form}>
         <input
           name="title"
-          placeholder="Title"
+          placeholder="Property Title"
           value={form.title}
           onChange={handleChange}
+          style={styles.input}
         />
 
         <input
@@ -170,6 +170,7 @@ export default function Listings() {
           placeholder="Category"
           value={form.category}
           onChange={handleChange}
+          style={styles.input}
         />
 
         <input
@@ -177,6 +178,7 @@ export default function Listings() {
           placeholder="Location"
           value={form.location}
           onChange={handleChange}
+          style={styles.input}
         />
 
         <input
@@ -184,6 +186,7 @@ export default function Listings() {
           placeholder="Room Type"
           value={form.roomType}
           onChange={handleChange}
+          style={styles.input}
         />
 
         <input
@@ -191,6 +194,7 @@ export default function Listings() {
           placeholder="Price"
           value={form.price}
           onChange={handleChange}
+          style={styles.input}
         />
 
         <input
@@ -200,40 +204,44 @@ export default function Listings() {
           }
         />
 
-        <button type="submit">Add Listing</button>
+        <button type="submit" style={styles.button}>
+          Add Listing
+        </button>
       </form>
 
       {/* ================= LISTINGS ================= */}
-      <div style={{ marginTop: "20px" }}>
+      <div style={styles.grid}>
         {listings.length === 0 ? (
           <p>No listings found</p>
         ) : (
           listings.map((item) => (
-            <div
-              key={item._id}
-              style={{
-                border: "1px solid #ccc",
-                padding: "10px",
-                marginBottom: "10px",
-              }}
-            >
-              <h3>{item.title}</h3>
-              <p>{item.location}</p>
-              <p>{item.category}</p>
-              <p>{item.roomType}</p>
-              <p>{item.price}</p>
-
-              {item.image && (
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  style={{ width: "150px" }}
-                />
+            <div key={item._id} style={styles.card}>
+              {item.image ? (
+                <img src={item.image} alt={item.title} style={styles.image} />
+              ) : (
+                <div style={styles.noImage}>No Image</div>
               )}
 
-              <button onClick={() => deleteListing(item._id)}>
-                Delete
-              </button>
+              <div style={styles.content}>
+                <h3>{item.title}</h3>
+
+                <p>📍 {item.location}</p>
+                <p>🏷️ {item.category}</p>
+                <p>🛏️ {item.roomType}</p>
+
+                <p style={styles.price}>💰 {item.price}</p>
+
+                {item.description && (
+                  <p style={styles.description}>{item.description}</p>
+                )}
+
+                <button
+                  style={styles.deleteBtn}
+                  onClick={() => deleteListing(item._id)}
+                >
+                  🗑 Delete
+                </button>
+              </div>
             </div>
           ))
         )}
@@ -242,6 +250,7 @@ export default function Listings() {
   );
 }
 
+/* ================= STYLES (UNCHANGED) ================= */
 const styles = {
   heading: {
     color: "#ffd54f",
@@ -249,8 +258,7 @@ const styles = {
   },
 
   form: {
-    background:
-      "rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.08)",
     padding: "20px",
     borderRadius: "16px",
     marginBottom: "30px",
@@ -262,15 +270,6 @@ const styles = {
     padding: "12px",
     borderRadius: "10px",
     border: "none",
-    outline: "none",
-  },
-
-  textarea: {
-    minHeight: "100px",
-    padding: "12px",
-    borderRadius: "10px",
-    border: "none",
-    resize: "vertical",
     outline: "none",
   },
 
@@ -286,19 +285,16 @@ const styles = {
 
   grid: {
     display: "grid",
-    gridTemplateColumns:
-      "repeat(auto-fit,minmax(260px,1fr))",
+    gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
     gap: "20px",
   },
 
   card: {
-    background:
-      "rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.08)",
     borderRadius: "14px",
     overflow: "hidden",
     color: "white",
-    border:
-      "1px solid rgba(255,255,255,0.1)",
+    border: "1px solid rgba(255,255,255,0.1)",
   },
 
   image: {
@@ -312,8 +308,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background:
-      "rgba(255,255,255,0.05)",
+    background: "rgba(255,255,255,0.05)",
   },
 
   content: {
@@ -346,21 +341,20 @@ const styles = {
   },
 
   loading: {
-  minHeight: "100vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  color: "white",
-  fontSize: "20px",
-},
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "white",
+    fontSize: "20px",
+  },
 
-error: {
-  minHeight: "100vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  color: "red",
-  fontSize: "18px",
-},
-
+  error: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "red",
+    fontSize: "18px",
+  },
 };

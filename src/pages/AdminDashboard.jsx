@@ -33,10 +33,23 @@ export default function AdminDashboard() {
       window.removeEventListener("resize", handleResize);
   }, []);
 
+  /* ================= TOKEN HELPER ================= */
+  const getToken = () => {
+    return localStorage.getItem("jni_admin_token");
+  };
+
   /* ================= FETCH LIVE STATS ================= */
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem("jni_admin_token");
+      const token = getToken();
+
+      console.log("TOKEN:", token);
+
+      if (!token) {
+        setError("No admin token found. Please login again.");
+        setLoading(false);
+        return;
+      }
 
       const res = await axios.get(
         "https://jni-backend.onrender.com/api/admin/dashboard",
@@ -58,7 +71,7 @@ export default function AdminDashboard() {
 
       setError("");
     } catch (error) {
-      console.log(error);
+      console.log("DASHBOARD ERROR:", error.response?.data || error.message);
       setError("Failed to load dashboard");
     } finally {
       setLoading(false);

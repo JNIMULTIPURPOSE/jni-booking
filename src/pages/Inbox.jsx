@@ -2,21 +2,47 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Inbox() {
-  const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] =
+    useState([]);
+
+  // FIXED: Missing states
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   /* LOAD BOOKINGS */
   const fetchBookings = async () => {
     try {
-      setLoading(true);
-      setError("");
       const res = await axios.get(
         "https://jni-backend.onrender.com/api/bookings"
       );
 
-      setBookings(res.data);
+      setBookings(
+        Array.isArray(res.data)
+          ? res.data
+          : []
+      );
+
+      // FIXED:
+      // clear old errors
+      setError("");
 
     } catch (error) {
+
       console.log(error);
+
+      setError(
+        "Failed to load"
+      );
+
+    } finally {
+
+      // FIXED:
+      // only stop initial loading
+      setLoading(false);
+
     }
   };
 
@@ -38,15 +64,20 @@ export default function Inbox() {
       fetchBookings();
 
     } catch (error) {
+
       console.log(error);
+
     }
   };
 
   /* DELETE BOOKING */
-  const deleteBooking = async (id) => {
-    const confirmDelete = window.confirm(
-      "Delete this booking permanently?"
-    );
+  const deleteBooking = async (
+    id
+  ) => {
+    const confirmDelete =
+      window.confirm(
+        "Delete this booking permanently?"
+      );
 
     if (!confirmDelete) return;
 
@@ -58,32 +89,33 @@ export default function Inbox() {
       fetchBookings();
 
     } catch (error) {
+
       console.log(error);
 
-          setError(
-        "Failed to load"
+      setError(
+        "Failed to delete booking"
       );
 
-    } finally {
-      setLoading(false);
     }
   };
 
+  /* LOADING */
   if (loading) {
-  return (
-    <div style={styles.loading}>
-      Loading...
-    </div>
-  );
-}
+    return (
+      <div style={styles.loading}>
+        Loading...
+      </div>
+    );
+  }
 
-if (error) {
-  return (
-    <div style={styles.error}>
-      {error}
-    </div>
-  );
-}
+  /* ERROR */
+  if (error) {
+    return (
+      <div style={styles.error}>
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -159,6 +191,7 @@ if (error) {
                 <div
                   style={{
                     ...styles.status,
+
                     background:
                       booking.status ===
                       "Approved"
@@ -169,7 +202,8 @@ if (error) {
                         : "#d4af37",
                   }}
                 >
-                  {booking.status || "Pending"}
+                  {booking.status ||
+                    "Pending"}
                 </div>
 
                 {/* ACTION BUTTONS */}

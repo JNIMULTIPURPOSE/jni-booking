@@ -192,6 +192,7 @@ export default function Apartments() {
     </div>
   );
 }
+
 const styles = {
   page: {
     minHeight: "100vh",

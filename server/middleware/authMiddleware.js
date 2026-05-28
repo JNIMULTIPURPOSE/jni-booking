@@ -2,32 +2,36 @@ import jwt from "jsonwebtoken";
 
 const authMiddleware = (req, res, next) => {
   try {
-    const token =
-      req.headers.authorization?.split(" ")[1];
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    // 🔥 DEBUG: check if header exists
+    console.log("AUTH HEADER:", authHeader);
+    console.log("JWT SECRET:", process.env.JWT_SECRET);
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         message: "No token provided",
       });
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
+    const token = authHeader.split(" ")[1];
+
+    // 🔥 DEBUG: confirm token is received
+    console.log("TOKEN RECEIVED:", token);
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = decoded;
 
-    // 🔐 ADMIN CHECK (IMPORTANT ADDITION)
-    if (decoded.role !== "admin") {
-      return res.status(403).json({
-        message: "Access denied: Admin only",
-      });
-    }
+    // 🔥 DEBUG: confirm decode success
+    console.log("DECODED USER:", decoded);
 
     next();
+
   } catch (error) {
-    res.status(401).json({
+    console.log("JWT ERROR:", error.message);
+
+    return res.status(401).json({
       message: "Invalid token",
     });
   }

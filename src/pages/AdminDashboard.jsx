@@ -10,16 +10,16 @@ export default function AdminDashboard() {
     useState("dashboard");
 
   const [stats, setStats] = useState({
-  users: 0,
-  listings: 0,
-  bookings: 0,
-});
+    users: 0,
+    listings: 0,
+    bookings: 0,
+  });
 
-const [loading, setLoading] =
-  useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
-const [error, setError] =
-  useState("");
+  const [error, setError] =
+    useState("");
 
   const [pendingCount, setPendingCount] =
     useState(0);
@@ -52,17 +52,17 @@ const [error, setError] =
 
   /* ================= FETCH LIVE STATS ================= */
   const fetchStats = async () => {
-  try {
-    setLoading(true);
-    setError("");
+    try {
       const res = await axios.get(
         "https://jni-backend.onrender.com/api/admin/stats"
       );
 
       setStats({
         users: res.data.users || 0,
+
         listings:
           res.data.listings || 0,
+
         bookings:
           res.data.bookings || 0,
       });
@@ -75,17 +75,25 @@ const [error, setError] =
         res.data.unread || 0
       );
 
+      // FIXED: Clear previous errors
+      setError("");
+
     } catch (error) {
-       console.log(error);
 
-    setError(
-      "Failed to load dashboard"
-    );
+      console.log(error);
 
-  } finally {
-    setLoading(false);
-  }
-};
+      setError(
+        "Failed to load dashboard"
+      );
+
+    } finally {
+
+      // FIXED:
+      // loading only ends once
+      setLoading(false);
+
+    }
+  };
 
   /* ================= AUTO REFRESH ================= */
   useEffect(() => {
@@ -97,6 +105,7 @@ const [error, setError] =
 
     return () =>
       clearInterval(interval);
+
   }, []);
 
   /* ================= RENDER CONTENT ================= */
@@ -136,21 +145,23 @@ const [error, setError] =
     );
   };
 
+  /* ================= LOADING ================= */
   if (loading) {
-  return (
-    <div style={styles.loading}>
-      Loading dashboard...
-    </div>
-  );
-}
+    return (
+      <div style={styles.loading}>
+        Loading dashboard...
+      </div>
+    );
+  }
 
-if (error) {
-  return (
-    <div style={styles.error}>
-      {error}
-    </div>
-  );
-}
+  /* ================= ERROR ================= */
+  if (error) {
+    return (
+      <div style={styles.error}>
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div style={styles.container}>
@@ -158,6 +169,7 @@ if (error) {
       <div
         style={{
           ...styles.sidebar,
+
           ...(isMobile &&
             styles.mobileSidebar),
         }}
@@ -259,6 +271,7 @@ if (error) {
       <div
         style={{
           ...styles.content,
+
           ...(isMobile &&
             styles.mobileContent),
         }}
@@ -271,6 +284,7 @@ if (error) {
         <div
           style={{
             ...styles.statsGrid,
+
             ...(isMobile &&
               styles.mobileStatsGrid),
           }}
@@ -312,6 +326,7 @@ if (error) {
         <div
           style={{
             ...styles.pageContent,
+
             ...(isMobile &&
               styles.mobilePageContent),
           }}

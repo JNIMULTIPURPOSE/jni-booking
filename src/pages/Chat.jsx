@@ -118,7 +118,7 @@ export default function Chat() {
   if (loading) {
     return (
       <div style={styles.loading}>
-        Loading...
+        Loading Chats...
       </div>
     );
   }

@@ -2,7 +2,15 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Listings() {
-  const [listings, setListings] = useState([]);
+  const [listings, setListings] =
+    useState([]);
+
+  // FIXED: Missing states
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   const [form, setForm] = useState({
     title: "",
@@ -22,17 +30,32 @@ export default function Listings() {
         "https://jni-backend.onrender.com/api/listings"
       );
 
-      setListings(true);
-      SetError("");
+      // FIXED:
+      // was setListings(true)
+      setListings(
+        Array.isArray(res.data)
+          ? res.data
+          : []
+      );
+
+      // FIXED:
+      // was SetError("")
+      setError("");
 
     } catch (error) {
+
       console.log(error);
+
       setError(
         "Failed to load"
       );
-    }
-    finally {
+
+    } finally {
+
+      // FIXED:
+      // only stops initial loading
       setLoading(false);
+
     }
   };
 
@@ -44,7 +67,9 @@ export default function Listings() {
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+
+      [e.target.name]:
+        e.target.value,
     });
   };
 
@@ -58,7 +83,10 @@ export default function Listings() {
       !form.location ||
       !form.price
     ) {
-      alert("Please fill required fields");
+      alert(
+        "Please fill required fields"
+      );
+
       return;
     }
 
@@ -67,19 +95,22 @@ export default function Listings() {
 
       /* IMAGE UPLOAD */
       if (form.image) {
-        const imageData = new FormData();
+        const imageData =
+          new FormData();
 
         imageData.append(
           "image",
           form.image
         );
 
-        const uploadRes = await axios.post(
-          "https://jni-backend.onrender.com/api/upload",
-          imageData
-        );
+        const uploadRes =
+          await axios.post(
+            "https://jni-backend.onrender.com/api/upload",
+            imageData
+          );
 
-        imageUrl = uploadRes.data.imageUrl;
+        imageUrl =
+          uploadRes.data.imageUrl;
       }
 
       /* FINAL ROOM TYPE */
@@ -91,17 +122,29 @@ export default function Listings() {
       /* FINAL FORM */
       const finalForm = {
         title: form.title,
-        category: form.category,
-        location: form.location,
-        roomType: finalRoomType,
+
+        category:
+          form.category,
+
+        location:
+          form.location,
+
+        roomType:
+          finalRoomType,
+
         price: form.price,
-        description: form.description,
+
+        description:
+          form.description,
+
         image: imageUrl,
       };
 
       /* TOKEN */
       const token =
-        localStorage.getItem("token");
+        localStorage.getItem(
+          "token"
+        );
 
       await axios.post(
         "https://jni-backend.onrender.com/api/listings",
@@ -129,23 +172,32 @@ export default function Listings() {
       fetchListings();
 
     } catch (error) {
+
       console.log(error);
 
-      alert("Failed to add listing");
+      alert(
+        "Failed to add listing"
+      );
+
     }
   };
 
   /* DELETE LISTING */
-  const deleteListing = async (id) => {
-    const confirmDelete = window.confirm(
-      "Delete this listing?"
-    );
+  const deleteListing = async (
+    id
+  ) => {
+    const confirmDelete =
+      window.confirm(
+        "Delete this listing?"
+      );
 
     if (!confirmDelete) return;
 
     try {
       const token =
-        localStorage.getItem("token");
+        localStorage.getItem(
+          "token"
+        );
 
       await axios.delete(
         `https://jni-backend.onrender.com/api/listings/${id}`,
@@ -159,25 +211,29 @@ export default function Listings() {
       fetchListings();
 
     } catch (error) {
+
       console.log(error);
+
     }
   };
 
+  /* LOADING */
   if (loading) {
-  return (
-    <div style={styles.loading}>
-      Loading...
-    </div>
-  );
-}
+    return (
+      <div style={styles.loading}>
+        Loading...
+      </div>
+    );
+  }
 
-if (error) {
-  return (
-    <div style={styles.error}>
-      {error}
-    </div>
-  );
-}
+  /* ERROR */
+  if (error) {
+    return (
+      <div style={styles.error}>
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -264,13 +320,18 @@ if (error) {
         </select>
 
         {/* CUSTOM ROOM TYPE */}
-        {form.roomType === "Custom" && (
+        {form.roomType ===
+          "Custom" && (
           <input
             type="text"
             name="customRoomType"
             placeholder="Enter custom room type"
-            value={form.customRoomType}
-            onChange={handleChange}
+            value={
+              form.customRoomType
+            }
+            onChange={
+              handleChange
+            }
             style={styles.input}
           />
         )}
@@ -291,7 +352,9 @@ if (error) {
           onChange={(e) =>
             setForm({
               ...form,
-              image: e.target.files[0],
+
+              image:
+                e.target.files[0],
             })
           }
           style={styles.input}
@@ -327,7 +390,9 @@ if (error) {
                 style={styles.image}
               />
             ) : (
-              <div style={styles.noImage}>
+              <div
+                style={styles.noImage}
+              >
                 No Image
               </div>
             )}
@@ -352,15 +417,23 @@ if (error) {
               </p>
 
               {item.description && (
-                <p style={styles.description}>
+                <p
+                  style={
+                    styles.description
+                  }
+                >
                   {item.description}
                 </p>
               )}
 
               <button
-                style={styles.deleteBtn}
+                style={
+                  styles.deleteBtn
+                }
                 onClick={() =>
-                  deleteListing(item._id)
+                  deleteListing(
+                    item._id
+                  )
                 }
               >
                 🗑 Delete

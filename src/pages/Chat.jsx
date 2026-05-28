@@ -10,9 +10,15 @@ export default function Chat() {
   const [message, setMessage] =
     useState("");
 
-  const [chat, setChat] = useState(
-    []
-  );
+  const [chat, setChat] =
+    useState([]);
+
+  // FIXED: Missing states
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   const bottomRef = useRef(null);
 
@@ -31,25 +37,35 @@ export default function Chat() {
         "https://jni-backend.onrender.com/api/chat"
       );
 
-      const filtered =
-        res.data.filter(
-          (c) =>
-            c.userEmail === userEmail
-        );
+      // FIXED: Prevent filter crash
+      const filtered = (
+        Array.isArray(res.data)
+          ? res.data
+          : []
+      ).filter(
+        (c) =>
+          c.userEmail === userEmail
+      );
 
       setChat(filtered);
 
+      // FIXED: Clear previous errors
+      setError("");
+
     } catch (error) {
-    console.log(error);
 
-    setError(
-      "Failed to load dashboard"
-    );
+      console.log(error);
 
-  } finally {
-    setLoading(false);
-  }
-};
+      setError(
+        "Failed to load dashboard"
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  };
 
   /* ================= INITIAL LOAD ================= */
   useEffect(() => {
@@ -92,25 +108,29 @@ export default function Chat() {
       loadChats();
 
     } catch (error) {
+
       console.log(error);
+
     }
   };
-  
-  if (loading) {
-  return (
-    <div style={styles.loading}>
-      Loading...
-    </div>
-  );
-}
 
-if (error) {
-  return (
-    <div style={styles.error}>
-      {error}
-    </div>
-  );
-}
+  /* ================= LOADING ================= */
+  if (loading) {
+    return (
+      <div style={styles.loading}>
+        Loading...
+      </div>
+    );
+  }
+
+  /* ================= ERROR ================= */
+  if (error) {
+    return (
+      <div style={styles.error}>
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div style={styles.wrapper}>
@@ -147,6 +167,7 @@ if (error) {
               key={c._id}
               style={{
                 display: "flex",
+
                 justifyContent:
                   c.sender === "user"
                     ? "flex-end"

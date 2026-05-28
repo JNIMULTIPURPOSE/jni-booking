@@ -20,47 +20,46 @@ export default function AdminLogin() {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    setLoading(true);
-    setMessage("");
+  setLoading(true);
+  setMessage("");
 
-    // ADMIN VALIDATION
-    if (form.email !== "admin@jni.com") {
-      setMessage("Invalid admin email");
-      setLoading(false);
-      return;
-    }
+  try {
+    const res = await axios.post(
+      "https://jni-backend.onrender.com/api/admin/login",
+      {
+        email: form.email,
+        password: form.password,
+      }
+    );
 
-    if (form.password !== "admin123") {
-      setMessage("Wrong password");
-      setLoading(false);
-      return;
-    }
-
-    // SAVE ADMIN SESSION
+    // SAVE ADMIN SESSION (from backend response)
     localStorage.setItem(
       "jni_admin",
-      JSON.stringify({
-        email: form.email,
-        role: "admin",
-      })
+      JSON.stringify(res.data.admin)
     );
 
     localStorage.setItem(
       "jni_admin_token",
-      "admin_logged_in"
+      res.data.token
     );
 
     setMessage(
       "Login successful ✅ Redirecting..."
     );
 
-    // REDIRECT
     setTimeout(() => {
       navigate("/admin");
     }, 1200);
-  };
+
+  } catch (error) {
+    console.log(error);
+    setMessage("Invalid credentials");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div style={styles.page}>

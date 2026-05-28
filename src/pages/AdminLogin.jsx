@@ -34,10 +34,16 @@ export default function AdminLogin() {
       }
     );
 
-    // SAVE ADMIN SESSION (from backend response)
+    // VALIDATE TOKEN FIRST
+    if (!res.data.token) {
+      setMessage("Login failed: No token received");
+      return;
+    }
+
+    // SAVE SESSION
     localStorage.setItem(
       "jni_admin",
-      JSON.stringify(res.data.admin)
+      JSON.stringify(res.data.admin || {})
     );
 
     localStorage.setItem(
@@ -45,9 +51,7 @@ export default function AdminLogin() {
       res.data.token
     );
 
-    setMessage(
-      "Login successful ✅ Redirecting..."
-    );
+    setMessage("Login successful ✅ Redirecting...");
 
     setTimeout(() => {
       navigate("/admin");

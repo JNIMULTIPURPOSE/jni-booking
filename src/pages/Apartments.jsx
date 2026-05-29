@@ -30,7 +30,6 @@ export default function Apartments() {
         );
 
         setListings(filtered);
-
       } catch (error) {
         console.log("APARTMENTS ERROR:", error);
       }
@@ -40,61 +39,39 @@ export default function Apartments() {
   }, []);
 
   /* ================= SEARCH ================= */
-  const filtered = listings.filter(
-    (item) =>
-      item.title
-        ?.toLowerCase()
-        .includes(search.toLowerCase()) ||
-      item.location
-        ?.toLowerCase()
-        .includes(search.toLowerCase())
+  const filtered = listings.filter((item) =>
+    (item.title || "")
+      .toLowerCase()
+      .includes(search.toLowerCase()) ||
+    (item.location || "")
+      .toLowerCase()
+      .includes(search.toLowerCase())
   );
 
   /* ================= BOOKING ================= */
-  const generateBooking = (
-    houseName,
-    email = "",
-    formData = {}
-  ) => {
+  const generateBooking = (houseName, email = "", formData = {}) => {
     const booking = {
-      id:
-        "JNI-" +
-        Math.floor(Math.random() * 1000000),
-
+      id: "JNI-" + Math.floor(Math.random() * 1000000),
       house: houseName,
-
-      email: email,
-
+      email,
       name: formData.fullname || "",
-
       phone: formData.phone || "",
-
       budget: formData.budget || "",
-
       date: new Date().toLocaleString(),
-
       status: "Pending",
     };
 
     const old =
-      JSON.parse(
-        localStorage.getItem(
-          "jni_bookings"
-        )
-      ) || [];
+      JSON.parse(localStorage.getItem("jni_bookings")) || [];
 
     old.push(booking);
 
-    localStorage.setItem(
-      "jni_bookings",
-      JSON.stringify(old)
-    );
+    localStorage.setItem("jni_bookings", JSON.stringify(old));
   };
 
   /* ================= BOOK NOW ================= */
   const handleBookNow = (houseName) => {
     setSelectedHouse(houseName);
-
     generateBooking(houseName);
 
     window.scrollTo({
@@ -113,25 +90,17 @@ export default function Apartments() {
       !form.phone ||
       !form.budget
     ) {
-      setMessage(
-        "Please fill all required fields."
-      );
-
+      setMessage("Please fill all required fields.");
       return;
     }
 
     generateBooking(
-      selectedHouse ||
-        "General Apartment Request",
-
+      selectedHouse || "General Apartment Request",
       form.email,
-
       form
     );
 
-    setMessage(
-      "Booking submitted successfully ✅"
-    );
+    setMessage("Booking submitted successfully ✅");
 
     setForm({
       fullname: "",
@@ -145,18 +114,14 @@ export default function Apartments() {
 
   return (
     <div style={styles.page}>
-      <h1 style={styles.title}>
-        Apartments
-      </h1>
+      <h1 style={styles.title}>🏢 Apartments</h1>
 
       {/* SEARCH */}
       <input
         type="text"
         placeholder="Search apartments..."
         value={search}
-        onChange={(e) =>
-          setSearch(e.target.value)
-        }
+        onChange={(e) => setSearch(e.target.value)}
         style={styles.search}
       />
 
@@ -164,14 +129,11 @@ export default function Apartments() {
       <div style={styles.grid}>
         {filtered.length === 0 ? (
           <p style={styles.empty}>
-            No apartments available
+            No apartments available yet.
           </p>
         ) : (
           filtered.map((item) => (
-            <div
-              key={item._id}
-              style={styles.card}
-            >
+            <div key={item._id} style={styles.card}>
               {item.image ? (
                 <img
                   src={item.image}
@@ -184,86 +146,50 @@ export default function Apartments() {
                 </div>
               )}
 
-              <div style={styles.cardContent}>
-                <h3>{item.title}</h3>
+              <h3>{item.title}</h3>
+              <p>📍 {item.location}</p>
+              <p>🏠 {item.roomType}</p>
+              <p style={styles.price}>💰 {item.price}</p>
 
-                <p>
-                  📍 {item.location}
-                </p>
-
-                <p>
-                  🏠 {item.roomType}
-                </p>
-
-                <p style={styles.price}>
-                  💰 {item.price}
-                </p>
-
-                {item.description && (
-                  <p style={styles.description}>
-                    {item.description}
-                  </p>
-                )}
-
-                <button
-                  style={styles.button}
-                  onClick={() =>
-                    handleBookNow(
-                      item.title
-                    )
-                  }
-                >
-                  Book Now
-                </button>
-              </div>
+              <button
+                style={styles.button}
+                onClick={() => handleBookNow(item.title)}
+              >
+                Book Now
+              </button>
             </div>
           ))
         )}
       </div>
 
       {/* GALLERY */}
-      <h2 style={styles.sectionTitle}>
-        Gallery
-      </h2>
+      <h2 style={styles.sectionTitle}>Gallery</h2>
 
       <div style={styles.gallery}>
-        {filtered.map((item) => (
-          <div
-            key={item._id + "-gallery"}
-            style={styles.galleryCard}
-          >
-            {item.image ? (
-              <img
-                src={item.image}
-                alt={item.title}
-                style={styles.galleryImage}
-              />
-            ) : (
-              <div style={styles.photo}>
-                No Image
-              </div>
-            )}
-          </div>
-        ))}
+        {filtered.length === 0 ? (
+          <p>No apartment gallery yet.</p>
+        ) : (
+          filtered.map((item) => (
+            <div key={item._id + "-g"} style={styles.photo}>
+              {item.image ? (
+                <img src={item.image} alt="" style={styles.image} />
+              ) : (
+                "No Image"
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       {/* BOOKING FORM */}
-      <h2 style={styles.sectionTitle}>
-        Booking Form
-      </h2>
+      <h2 style={styles.sectionTitle}>Booking Form</h2>
 
-      <form
-        onSubmit={handleSubmit}
-        style={styles.form}
-      >
+      <form onSubmit={handleSubmit} style={styles.form}>
         <input
           placeholder="Full Name"
           value={form.fullname}
           onChange={(e) =>
-            setForm({
-              ...form,
-              fullname: e.target.value,
-            })
+            setForm({ ...form, fullname: e.target.value })
           }
           style={styles.input}
         />
@@ -272,10 +198,7 @@ export default function Apartments() {
           placeholder="Email"
           value={form.email}
           onChange={(e) =>
-            setForm({
-              ...form,
-              email: e.target.value,
-            })
+            setForm({ ...form, email: e.target.value })
           }
           style={styles.input}
         />
@@ -284,22 +207,16 @@ export default function Apartments() {
           placeholder="Phone"
           value={form.phone}
           onChange={(e) =>
-            setForm({
-              ...form,
-              phone: e.target.value,
-            })
+            setForm({ ...form, phone: e.target.value })
           }
           style={styles.input}
         />
 
         <input
-          placeholder="Budget Range"
+          placeholder="Budget"
           value={form.budget}
           onChange={(e) =>
-            setForm({
-              ...form,
-              budget: e.target.value,
-            })
+            setForm({ ...form, budget: e.target.value })
           }
           style={styles.input}
         />
@@ -308,10 +225,7 @@ export default function Apartments() {
           type="date"
           value={form.movein}
           onChange={(e) =>
-            setForm({
-              ...form,
-              movein: e.target.value,
-            })
+            setForm({ ...form, movein: e.target.value })
           }
           style={styles.input}
         />
@@ -320,123 +234,62 @@ export default function Apartments() {
           placeholder="Notes"
           value={form.notes}
           onChange={(e) =>
-            setForm({
-              ...form,
-              notes: e.target.value,
-            })
+            setForm({ ...form, notes: e.target.value })
           }
-          style={styles.textarea}
+          style={styles.input}
         />
 
-        <button
-          type="submit"
-          style={styles.button}
-        >
+        <button type="submit" style={styles.button}>
           Submit Booking
         </button>
       </form>
 
-      {message && (
-        <p style={styles.message}>
-          {message}
-        </p>
-      )}
+      {message && <p style={styles.message}>{message}</p>}
     </div>
   );
 }
 
+/* SAME STYLE STRUCTURE */
 const styles = {
   page: {
-    minHeight: "100vh",
-    background:
-      "linear-gradient(135deg,#033d24,#046b3b,#000000,#d4af37)",
     padding: "30px",
-    fontFamily: "Arial",
+    background: "#000",
     color: "white",
+    minHeight: "100vh",
+    fontFamily: "Arial",
   },
-
-  title: {
-    textAlign: "center",
-    color: "#ffd54f",
-    fontSize: "40px",
-  },
-
-  search: {
-    width: "100%",
-    padding: "12px",
-    borderRadius: "10px",
-    border: "none",
-    marginBottom: "25px",
-  },
-
+  title: { color: "#d4af37" },
+  search: { width: "100%", padding: "10px", marginBottom: "20px" },
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
     gap: "20px",
   },
-
   card: {
     background: "rgba(255,255,255,0.08)",
-    padding: "20px",
-    borderRadius: "15px",
-    border: "1px solid rgba(255,255,255,0.12)",
+    padding: "15px",
+    borderRadius: "12px",
   },
-
+  image: { width: "100%", height: "150px", objectFit: "cover" },
+  noImage: { height: "120px", display: "flex", justifyContent: "center" },
   button: {
     width: "100%",
+    marginTop: "10px",
     padding: "10px",
-    marginTop: "15px",
     background: "#ffd54f",
-    color: "#000",
     border: "none",
-    borderRadius: "10px",
     fontWeight: "bold",
-    cursor: "pointer",
   },
-
-  sectionTitle: {
-    marginTop: "40px",
-    marginBottom: "15px",
-    color: "#ffd54f",
-  },
-
+  sectionTitle: { marginTop: "30px", color: "#ffd54f" },
   gallery: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
-    gap: "15px",
+    gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))",
+    gap: "10px",
   },
-
-  photo: {
-    height: "140px",
-    background: "rgba(255,255,255,0.08)",
-    borderRadius: "12px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  form: {
-    display: "grid",
-    gap: "14px",
-  },
-
-  input: {
-    padding: "12px",
-    borderRadius: "10px",
-    border: "none",
-  },
-
-  textarea: {
-    minHeight: "100px",
-    padding: "12px",
-    borderRadius: "10px",
-    border: "none",
-  },
-
-  message: {
-    marginTop: "20px",
-    textAlign: "center",
-    color: "#ffffff",
-    fontWeight: "bold",
-  },
+  photo: { height: "120px", background: "#222" },
+  form: { display: "grid", gap: "10px" },
+  input: { padding: "10px" },
+  empty: { opacity: 0.7 },
+  price: { color: "#ffd54f", fontWeight: "bold" },
+  message: { marginTop: "10px", color: "lightgreen" },
 };

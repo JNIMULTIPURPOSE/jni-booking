@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Apartments() {
   const [listings, setListings] = useState([]);
@@ -16,63 +17,120 @@ export default function Apartments() {
 
   const [message, setMessage] = useState("");
 
-  // 🔥 LOAD FROM ADMIN LISTINGS
+  /* ================= LOAD APARTMENTS ================= */
   useEffect(() => {
-    const saved =
-      JSON.parse(localStorage.getItem("jni_listings")) || [];
+    const fetchApartments = async () => {
+      try {
+        const res = await axios.get(
+          "https://jni-backend.onrender.com/api/listings"
+        );
 
-    const filtered = saved.filter(
-      (item) => item.category === "Apartment"
-    );
+        const filtered = res.data.filter(
+          (item) => item.category === "Apartments"
+        );
 
-    setListings(filtered);
+        setListings(filtered);
+
+      } catch (error) {
+        console.log("APARTMENTS ERROR:", error);
+      }
+    };
+
+    fetchApartments();
   }, []);
 
-  // 🔍 SEARCH FILTER
+  /* ================= SEARCH ================= */
   const filtered = listings.filter(
     (item) =>
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.location.toLowerCase().includes(search.toLowerCase())
+      item.title
+        ?.toLowerCase()
+        .includes(search.toLowerCase()) ||
+      item.location
+        ?.toLowerCase()
+        .includes(search.toLowerCase())
   );
 
-  // 📦 BOOKING SYSTEM
-  const generateBooking = (houseName, email = "", formData = {}) => {
-  const booking = {
-    id: "JNI-" + Math.floor(Math.random() * 1000000),
-    house: houseName,
-    email: email,
-    name: formData.fullname || "",
-    phone: formData.phone || "",
-    budget: formData.budget || "",
-    date: new Date().toLocaleString(),
-    status: "Pending",
+  /* ================= BOOKING ================= */
+  const generateBooking = (
+    houseName,
+    email = "",
+    formData = {}
+  ) => {
+    const booking = {
+      id:
+        "JNI-" +
+        Math.floor(Math.random() * 1000000),
+
+      house: houseName,
+
+      email: email,
+
+      name: formData.fullname || "",
+
+      phone: formData.phone || "",
+
+      budget: formData.budget || "",
+
+      date: new Date().toLocaleString(),
+
+      status: "Pending",
+    };
+
+    const old =
+      JSON.parse(
+        localStorage.getItem(
+          "jni_bookings"
+        )
+      ) || [];
+
+    old.push(booking);
+
+    localStorage.setItem(
+      "jni_bookings",
+      JSON.stringify(old)
+    );
   };
 
-  const old =
-    JSON.parse(localStorage.getItem("jni_bookings")) || [];
-
-  old.push(booking);
-
-  localStorage.setItem("jni_bookings", JSON.stringify(old));
-};
-
+  /* ================= BOOK NOW ================= */
   const handleBookNow = (houseName) => {
     setSelectedHouse(houseName);
+
     generateBooking(houseName);
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth",
+    });
   };
 
+  /* ================= SUBMIT ================= */
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!form.fullname || !form.email || !form.phone || !form.budget) {
-      setMessage("Please fill all required fields.");
+    if (
+      !form.fullname ||
+      !form.email ||
+      !form.phone ||
+      !form.budget
+    ) {
+      setMessage(
+        "Please fill all required fields."
+      );
+
       return;
     }
 
     generateBooking(
-      selectedHouse || "General Apartment Request",
-      form.email
+      selectedHouse ||
+        "General Apartment Request",
+
+      form.email,
+
+      form
+    );
+
+    setMessage(
+      "Booking submitted successfully ✅"
     );
 
     setForm({
@@ -87,53 +145,125 @@ export default function Apartments() {
 
   return (
     <div style={styles.page}>
-      <h1 style={styles.title}>Apartments</h1>
+      <h1 style={styles.title}>
+        Apartments
+      </h1>
 
       {/* SEARCH */}
       <input
         type="text"
         placeholder="Search apartments..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) =>
+          setSearch(e.target.value)
+        }
         style={styles.search}
       />
 
       {/* LISTINGS */}
       <div style={styles.grid}>
-        {filtered.map((item) => (
-          <div key={item.id} style={styles.card}>
-            <h3>{item.name}</h3>
-            <p>{item.location}</p>
-            <p>🏠 {item.roomType}</p>
-            <p>💰 {item.budget}</p>
-
-            <button
-              style={styles.button}
-              onClick={() => handleBookNow(item.name)}
+        {filtered.length === 0 ? (
+          <p style={styles.empty}>
+            No apartments available
+          </p>
+        ) : (
+          filtered.map((item) => (
+            <div
+              key={item._id}
+              style={styles.card}
             >
-              Book Now
-            </button>
+              {item.image ? (
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  style={styles.image}
+                />
+              ) : (
+                <div style={styles.noImage}>
+                  No Image
+                </div>
+              )}
+
+              <div style={styles.cardContent}>
+                <h3>{item.title}</h3>
+
+                <p>
+                  📍 {item.location}
+                </p>
+
+                <p>
+                  🏠 {item.roomType}
+                </p>
+
+                <p style={styles.price}>
+                  💰 {item.price}
+                </p>
+
+                {item.description && (
+                  <p style={styles.description}>
+                    {item.description}
+                  </p>
+                )}
+
+                <button
+                  style={styles.button}
+                  onClick={() =>
+                    handleBookNow(
+                      item.title
+                    )
+                  }
+                >
+                  Book Now
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* GALLERY */}
+      <h2 style={styles.sectionTitle}>
+        Gallery
+      </h2>
+
+      <div style={styles.gallery}>
+        {filtered.map((item) => (
+          <div
+            key={item._id + "-gallery"}
+            style={styles.galleryCard}
+          >
+            {item.image ? (
+              <img
+                src={item.image}
+                alt={item.title}
+                style={styles.galleryImage}
+              />
+            ) : (
+              <div style={styles.photo}>
+                No Image
+              </div>
+            )}
           </div>
         ))}
       </div>
 
-      {/* GALLERY (still static for now) */}
-      <h2 style={styles.sectionTitle}>Gallery</h2>
-      <div style={styles.gallery}>
-        <div style={styles.photo}>Apartment Photo 1</div>
-        <div style={styles.photo}>Apartment Photo 2</div>
-        <div style={styles.photo}>Apartment Photo 3</div>
-      </div>
-
       {/* BOOKING FORM */}
-      <h2 style={styles.sectionTitle}>Booking Form</h2>
+      <h2 style={styles.sectionTitle}>
+        Booking Form
+      </h2>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form
+        onSubmit={handleSubmit}
+        style={styles.form}
+      >
         <input
           placeholder="Full Name"
           value={form.fullname}
           onChange={(e) =>
-            setForm({ ...form, fullname: e.target.value })
+            setForm({
+              ...form,
+              fullname: e.target.value,
+            })
           }
           style={styles.input}
         />
@@ -142,7 +272,10 @@ export default function Apartments() {
           placeholder="Email"
           value={form.email}
           onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
+            setForm({
+              ...form,
+              email: e.target.value,
+            })
           }
           style={styles.input}
         />
@@ -151,7 +284,10 @@ export default function Apartments() {
           placeholder="Phone"
           value={form.phone}
           onChange={(e) =>
-            setForm({ ...form, phone: e.target.value })
+            setForm({
+              ...form,
+              phone: e.target.value,
+            })
           }
           style={styles.input}
         />
@@ -160,7 +296,10 @@ export default function Apartments() {
           placeholder="Budget Range"
           value={form.budget}
           onChange={(e) =>
-            setForm({ ...form, budget: e.target.value })
+            setForm({
+              ...form,
+              budget: e.target.value,
+            })
           }
           style={styles.input}
         />
@@ -169,7 +308,10 @@ export default function Apartments() {
           type="date"
           value={form.movein}
           onChange={(e) =>
-            setForm({ ...form, movein: e.target.value })
+            setForm({
+              ...form,
+              movein: e.target.value,
+            })
           }
           style={styles.input}
         />
@@ -178,17 +320,27 @@ export default function Apartments() {
           placeholder="Notes"
           value={form.notes}
           onChange={(e) =>
-            setForm({ ...form, notes: e.target.value })
+            setForm({
+              ...form,
+              notes: e.target.value,
+            })
           }
           style={styles.textarea}
         />
 
-        <button type="submit" style={styles.button}>
+        <button
+          type="submit"
+          style={styles.button}
+        >
           Submit Booking
         </button>
       </form>
 
-      {message && <p style={styles.message}>{message}</p>}
+      {message && (
+        <p style={styles.message}>
+          {message}
+        </p>
+      )}
     </div>
   );
 }

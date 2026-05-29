@@ -1,21 +1,64 @@
+import { useEffect, useState } from "react";
 import ListingCard from "../components/ListingCard";
 import RoomPageLayout from "./RoomPageLayout";
 
 export default function AirbnbStays() {
-  const listings = [
-    { title: "Modern Airbnb Loft", location: "Kileleshwa, Nairobi", price: Enquire },
-    { title: "City View Studio", location: "CBD Nairobi", price: Enquire },
-    { title: "Cozy Airbnb Apartment", location: "Karen, Nairobi", price: Enquire },
-  ];
+  const [listings, setListings] = useState([]);
+
+  /* LOAD ADMIN LISTINGS */
+  useEffect(() => {
+    const loadListings = () => {
+      const saved =
+        JSON.parse(
+          localStorage.getItem("jni_listings")
+        ) || [];
+
+      /* ONLY AIRBNB STAYS */
+      const filtered = saved.filter(
+        (item) =>
+          item.category === "Airbnb Stays"
+      );
+
+      setListings(filtered);
+    };
+
+    loadListings();
+
+    window.addEventListener(
+      "storage",
+      loadListings
+    );
+
+    return () => {
+      window.removeEventListener(
+        "storage",
+        loadListings
+      );
+    };
+  }, []);
 
   return (
     <div style={styles.page}>
-      <h1 style={styles.title}>Airbnb Stays</h1>
+      <h1 style={styles.title}>
+        Airbnb Stays
+      </h1>
 
       <div style={styles.grid}>
-        {listings.map((item, i) => (
-          <ListingCard key={i} {...item} />
-        ))}
+        {listings.length === 0 ? (
+          <p>No Airbnb stays available.</p>
+        ) : (
+          listings.map((item) => (
+            <ListingCard
+              key={item._id || item.id}
+              title={item.title}
+              location={item.location}
+              price={item.price}
+              image={item.image}
+              roomType={item.roomType}
+              description={item.description}
+            />
+          ))
+        )}
       </div>
     </div>
   );
@@ -37,7 +80,8 @@ const styles = {
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gridTemplateColumns:
+      "repeat(auto-fit, minmax(250px, 1fr))",
     gap: "20px",
   },
 };

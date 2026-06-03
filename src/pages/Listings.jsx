@@ -170,19 +170,20 @@ export default function Listings() {
           style={styles.input}
         >
           <option value="">Select Category</option>
-          <option>Hotels</option>
-          <option>Motels</option>
-          <option>Hostels</option>
-          <option>Apartments</option>
-          <option>Airbnb Stays</option>
-          <option>Vacation Homes</option>
-          <option>Resorts</option>
-          <option>Guest Houses</option>
-          <option>Meeting Rooms</option>
-          <option>Office Spaces</option>
-          <option>Event Venues</option>
-          <option>Conference Rooms</option>
-          <option>Studio Rentals</option>
+          <option>Hotel</option>
+          <option>Motel</option>
+          <option>Hostel</option>
+          <option>Apartment</option>
+          <option>Airbnb Stay</option>
+          <option>Vacation Home</option>
+          <option>Resort</option>
+          <option>Guest House</option>
+          <option>Meeting Room</option>
+          <option>Office Space</option>
+          <option>Event Venue</option>
+          <option>Conference Room</option>
+          <option>Studio</option>
+          <option value="Custom">Custom</option>
         </select>
 
         <input
@@ -193,7 +194,7 @@ export default function Listings() {
           style={styles.input}
         />
 
-        {/* ROOM TYPE DROPDOWN (RESTORED) */}
+        {/* ROOM TYPE DROPDOWN*/}
         <select
           name="roomType"
           value={form.roomType}
@@ -202,14 +203,19 @@ export default function Listings() {
         >
           <option value="">Select Room Type</option>
           <option>Single Room</option>
-          <option>Double Room</option>
-          <option>Deluxe Room</option>
+          <option>Double</option>
+          <option>Twin</option>
+          <option>Triple</option>
+          <option>cluster</option>
+          <option>Studio</option>
+          <option>Quadrouple</option>
           <option>Executive Suite</option>
           <option>Family Room</option>
-          <option>Studio</option>
+          <option>Superior</option>
+          <option>Bedsiter</option>
           <option>1 Bedroom</option>
           <option>2 Bedroom</option>
-          <option>Penthouse</option>
+          <option>Premium</option>
           <option>Conference Room</option>
           <option>Event Hall</option>
           <option value="Custom">Custom</option>

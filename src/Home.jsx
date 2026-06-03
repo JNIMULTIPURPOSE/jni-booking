@@ -512,7 +512,16 @@ export default function Home() {
               }
             >
               📱 Phone:
-              +254 702 551 560
+              +254 792 822620
+            </p>
+
+            <p
+              style={
+                styles.contactText
+              }
+            >
+              📱 Phone:
+              +254 701 444418
             </p>
 
             <p
@@ -521,7 +530,7 @@ export default function Home() {
               }
             >
               💬 WhatsApp:
-              +254 111 564 424
+              +254 111 564424
             </p>
 
             <p
@@ -530,7 +539,7 @@ export default function Home() {
               }
             >
               📧 Email:
-              support@jni.com
+              jnimultipurpose001@gmail.com
             </p>
           </div>
         )}

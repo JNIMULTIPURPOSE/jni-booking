@@ -11,6 +11,7 @@ export default function Apartments() {
     email: "",
     phone: "",
     budget: "",
+    location: "",
     movein: "",
     notes: "",
   });
@@ -105,7 +106,7 @@ export default function Apartments() {
 
         category: "Apartments",
 
-        location: "",
+        location: form.location,
 
         roomType: "Apartment",
 
@@ -258,6 +259,18 @@ export default function Apartments() {
           }
           style={styles.input}
         />
+
+        <input
+          placeholder="Preferred Location"
+          value={form.location}
+          onChange={(e) =>
+            setForm({
+      ...form,
+      location: e.target.value,
+    })
+  }
+  style={styles.input}
+/>
 
         <input
           type="date"

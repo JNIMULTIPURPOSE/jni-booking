@@ -81,36 +81,74 @@ export default function Apartments() {
   };
 
   /* ================= SUBMIT ================= */
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (
-      !form.fullname ||
-      !form.email ||
-      !form.phone ||
-      !form.budget
-    ) {
-      setMessage("Please fill all required fields.");
-      return;
-    }
+  if (
+    !form.fullname ||
+    !form.email ||
+    !form.phone ||
+    !form.budget ||
+    !form.movein
+  ) {
+    setMessage("Please fill all required fields.");
+    return;
+  }
 
-    generateBooking(
-      selectedHouse || "General Apartment Request",
-      form.email,
-      form
+  try {
+    await axios.post(
+      "https://jni-backend.onrender.com/api/bookings",
+      {
+        house:
+          selectedHouse ||
+          "General Apartment Request",
+
+        category: "Apartments",
+
+        location: "",
+
+        roomType: "Apartment",
+
+        price: form.budget,
+
+        image: "",
+
+        name: form.fullname,
+
+        phone: form.phone,
+
+        email: form.email,
+
+        checkin: form.movein,
+
+        notes: form.notes,
+
+        status: "Pending",
+      }
     );
 
-    setMessage("Booking submitted successfully ✅");
+    setMessage(
+      "Booking submitted successfully ✅"
+    );
 
     setForm({
       fullname: "",
       email: "",
       phone: "",
       budget: "",
+      location: "",
       movein: "",
       notes: "",
     });
-  };
+
+  } catch (error) {
+    console.log(error);
+
+    setMessage(
+      "Booking failed. Please try again."
+    );
+  }
+};
 
   return (
     <div style={styles.page}>

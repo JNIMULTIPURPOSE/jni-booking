@@ -343,6 +343,7 @@ export default function RoomPageLayout({
  
             <input
               type="text"
+              placeholder="Preferred Location"
               value={bookingForm.location}
               onChange={(e) =>
                 setBookingForm({
@@ -355,6 +356,7 @@ export default function RoomPageLayout({
 
             <input
               type="text"
+              placeholder="Preferred Room Type"
               value={bookingForm.roomType}
               onChange={(e) =>
                 setBookingForm({
@@ -367,6 +369,7 @@ export default function RoomPageLayout({
 
             <input
               type="currency"
+              placeholder="Budget Range"
               value={bookingForm.budget}
               onChange={(e) =>
                 setBookingForm({
@@ -379,6 +382,7 @@ export default function RoomPageLayout({
 
             <input
               type="date"
+              placeholder="Checkin"
               value={bookingForm.checkin}
               onChange={(e) =>
                 setBookingForm({

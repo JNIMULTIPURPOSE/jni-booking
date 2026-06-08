@@ -227,7 +227,7 @@ export default function RoomPageLayout({
 
                 <p>🛏️ {item.roomType}</p>
 
-                <p>💰 {item.price}</p>
+                <p>💰 {item.budget}</p>
 
                 {item.description && (
                   <p style={styles.description}>
@@ -340,6 +340,42 @@ export default function RoomPageLayout({
               }
               style={styles.input}
             />
+ 
+            <input
+              type="text"
+              value={bookingForm.location}
+              onChange={(e) =>
+                setBookingForm({
+                  ...bookingForm,
+                  checkin: e.target.value,
+                })
+              }
+              style={styles.input}
+            />
+
+            <input
+              type="text"
+              value={bookingForm.roomType}
+              onChange={(e) =>
+                setBookingForm({
+                  ...bookingForm,
+                  checkin: e.target.value,
+                })
+              }
+              style={styles.input}
+            />
+
+            <input
+              type="currency"
+              value={bookingForm.budget}
+              onChange={(e) =>
+                setBookingForm({
+                  ...bookingForm,
+                  checkin: e.target.value,
+                })
+              }
+              style={styles.input}
+            />
 
             <input
               type="date"
@@ -353,7 +389,7 @@ export default function RoomPageLayout({
               style={styles.input}
             />
 
-            <textarea
+                                <textarea
               placeholder="Additional Notes"
               value={bookingForm.notes}
               onChange={(e) =>

@@ -99,3 +99,24 @@ export const deleteBooking = async (
     });
   }
 };
+export const getUserBookings = async (
+  req,
+  res
+) => {
+  try {
+    const bookings = await Booking.find({
+      email: req.params.email,
+    }).sort({
+      createdAt: -1,
+    });
+
+    res.json(bookings);
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+};

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Chat from "./pages/Chat";
+import MyBookings from "./pages/MyBookings";
 
 export default function Home() {
   const [activeView, setActiveView] =
@@ -238,10 +239,10 @@ export default function Home() {
         <button
           style={styles.sideItem}
           onClick={() =>
-            setActiveView("gallery")
+            setActiveView("bookings")
           }
         >
-          🖼️ Gallery
+          📅 My Bookings
         </button>
 
         <button
@@ -485,6 +486,10 @@ export default function Home() {
         {/* CHAT */}
         {activeView === "chat" && (
           <Chat />
+        )}
+        
+        {activeView === "bookings" && (
+          <MyBookings />
         )}
 
         {/* CONTACT */}

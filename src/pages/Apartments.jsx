@@ -98,35 +98,36 @@ export default function Apartments() {
 
   try {
     await axios.post(
-      "https://jni-backend.onrender.com/api/bookings",
-      {
-        house:
-          selectedHouse ||
-          "General Apartment Request",
+  "https://jni-backend.onrender.com/api/bookings",
+  {
+    house: selectedHouse || "General Apartment Request",
 
-        category: "Apartments",
+    category: "Apartments",
 
-        location: form.location,
+    location: form.location,
 
-        roomType: "Apartment",
+    roomType: "Apartment",
 
-        price: form.budget,
+    price: form.budget,
 
-        image: "",
+    image: "",
 
-        name: form.fullname,
+    name: form.fullname,
 
-        phone: form.phone,
+    phone: form.phone,
 
-        email: form.email,
+    email: form.email,
 
-        checkin: form.movein,
+    checkin: form.movein,
 
-        notes: form.notes,
+    notes: form.notes,
 
-        status: "Pending",
-      }
-    );
+    referralCode:
+      localStorage.getItem("referralCode") || "",
+
+    status: "Pending",
+  }
+);
 
     setMessage(
       "Booking submitted successfully ✅"

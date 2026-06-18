@@ -9,6 +9,7 @@ import Chat from "../models/Chat.js";
 // ===============================
 // 🔐 ADMIN LOGIN
 // ===============================
+console.log("LOGIN JWT SECRET:", process.env.JWT_SECRET);
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;

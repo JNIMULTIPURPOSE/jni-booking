@@ -51,6 +51,11 @@ const bookingSchema = new mongoose.Schema(
       type: String,
     },
 
+    referralCode: {
+  type: String,
+  default: "",
+},
+
     status: {
       type: String,
       default: "Pending",
